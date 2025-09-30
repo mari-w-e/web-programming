@@ -48,7 +48,7 @@ const productlist = [
             pic:'images/hair-scrunchie.jpg',
             alt: 'hair-scrunchie'
         }
-    }
+    },
     {
         id: 6,
         name: "Камера Instax",
