@@ -1,98 +1,70 @@
-<!doctype html>
-<html lang="ru">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pinterest Girl Shop</title>
-  <link rel="stylesheet" href="css/styles.css" />
-</head>
-<body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <h1 class="logo">Pinterest Girl</h1>
-      <nav class="main-nav" aria-label="Главное меню">
-        <ul>
-          <li><a href="#catalog">Каталог</a></li>
-          <li><a href="#about">О нас</a></li>
-        </ul>
-      </nav>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Kitty shop</title>
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
+    <body>
+        <header>
+            <div class="container">
+            <div class="header__logo">Pinterest girl</div>
+                <nav>
+                    <ul class="navbar_menu">
+                        <li><a href="#catalog">Каталог</a></li>
+                        <li><a href="#cart">Корзина</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
 
-      <button id="cart-button" class="cart-btn" aria-haspopup="dialog" aria-controls="cart-panel">
-        🛒 <span id="cart-count">0</span>
-      </button>
-    </div>
-  </header>
+        <main>
+            <section class="catalog" id="catalog">
+                <h2>Каталог</h2>
+                <div class="catalog-list" id="catalog-list">
+                
+                </div>
+            </section>
 
-  <main>
-    <section id="hero" class="hero">
-      <div class="container">
-        <h2>Это точно тебе необходимо</h2>
-        <!-- <p>Ice latte, matcha, свечи и аксессуары — всё в одном стиле.</p> -->
-        <a href="#catalog" class="btn">Перейти в каталог</a>
-      </div>
-    </section>
+            <section class="cart" id="cart">
+                <h2>Корзина</h2>
+                <div class="basket-list">
+                
+                </div>
+            </section>
+        </main>
 
-    <section id="catalog" class="catalog container" aria-label="Каталог товаров">
-      <!-- карточки товаров будут вставляться JS или можно вставить вручную -->
-      <!-- Ниже пример статичной карточки (можно дублировать/генерировать) -->
-    </section>
+        <footer>
+            &copy; 2025 Pinterest Girl Shop. Все права защищены.
+        </footer>
 
-    <section id="about" class="container about">
-      <h3>О магазине</h3>
-      <p>Мини-проекта для учебы .</p>
-    </section>
-  </main>
+        <div class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <form action="" id="order-form">
+                    <h2>Оформление заказа</h2>
+                    <label for="name">Имя:</label>
+                    <input type="text" id="name" name="name" required>
 
-  <!-- Панель корзины -->
-  <aside id="cart-panel" class="cart-panel" aria-hidden="true" role="dialog" aria-label="Корзина">
-    <div class="cart-panel__inner">
-      <header class="cart-header">
-        <h3>Корзина</h3>
-        <button id="close-cart" aria-label="Закрыть корзину">✖</button>
-      </header>
-      <ul id="cart-items" class="cart-items">
-        <!-- элементы корзины -->
-      </ul>
+                    <label for="surname">Фамилия:</label>
+                    <input type="text" id="name" name="name" required>
+                    
+                    <label for="phone">Телефон:</label>
+                    <input type="tel" id="phone" name="phone" required>
+                    
+                    <label for="address">Адрес:</label>
+                    <input type="text" id="address" name="address" required>
+                    
+                    <button type="submit">Создать заказ</button>
+                </form>
 
-      <div class="cart-footer">
-        <div class="cart-total">Итого: <span id="cart-total">0 ₽</span></div>
-        <button id="checkout-btn" class="btn">Оформить заказ</button>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Модальное окно оформления -->
-  <div id="order-modal" class="modal" aria-hidden="true" role="dialog" aria-label="Форма заказа">
-    <div class="modal__backdrop"></div>
-    <div class="modal__content" role="document">
-      <button class="modal__close" id="close-order">✖</button>
-      <h3>Оформление заказа</h3>
-      <form id="order-form" class="order-form" novalidate>
-        <label>
-          Имя
-          <input type="text" name="firstName" required />
-        </label>
-        <label>
-          Фамилия
-          <input type="text" name="lastName" required />
-        </label>
-        <label>
-          Адрес доставки
-          <input type="text" name="address" required />
-        </label>
-        <label>
-          Контактный номер телефона
-          <input type="tel" name="phone" required pattern="[\d\s()+-]{6,}" />
-        </label>
-        <div class="order-actions">
-          <button type="submit" class="btn">Создать заказ</button>
-          <button type="button" id="cancel-order" class="btn btn--ghost">Отмена</button>
+                <div class="success">
+                    <h2>Спасибо за заказ!</h2>
+                    <p>Мы свяжемся с вами в ближайшее время.</p>
+                </div>
+            </div>
         </div>
-      </form>
-    </div>
-  </div>
-
-  <script src="js/script.js" defer></script>
-</body>
+        <script src="main.js"></script>
+    </body>
 </html>
-
