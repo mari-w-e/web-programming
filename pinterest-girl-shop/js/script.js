@@ -23,16 +23,16 @@ const productlist = [
         id: 3,
         name: "Бальзам для губ",
         price: 3000,
-        description: "Бальзам для губ в оттенке "вареная сгущенка",
+        description: "Бальзам для губ в оттенке 'вареная сгущенка' ",
         img: {
             pic:'../images/lip-balm.jpg',
-            alt: '<lip balm'
+            alt: 'lip balm'
         }
     }
 ];
 const basket = [];
 const catalogList = document.getElementById('catalog-list');
-const buyButtons = document.querySelectorAll('.buy-button');
+
 const modal = document.querySelector('.modal');
 const closeModalBtn = document.querySelector('.close-button');
 const form = document.getElementById('order-form');
@@ -118,7 +118,7 @@ function renderbasket() {
         </div><br>
         <div class="price-counter">
             <p>Общая сумма: <strong>${basketTotal()} руб.</strong></p>
-            <buttom class="checkout-button">Оформить заказ</button>
+            <button class="checkout-button">Оформить заказ</button>
         </div>
       `;
     bindCheckout();
@@ -144,6 +144,8 @@ productlist.forEach(product => {
     const card = createCard(product);
     catalogList.appendChild(card);
 });
+
+const buyButtons = document.querySelectorAll('.buy-button');
 
 buyButtons.forEach(button => {
     button.addEventListener('click', () => {
