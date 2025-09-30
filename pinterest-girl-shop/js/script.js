@@ -28,7 +28,7 @@ const productlist = [
             pic:'images/lip-balm.jpg',
             alt: 'lip balm'
         }
-    }/*,
+    },
     {
         id: 4,
         name: "Крабики для волос",
@@ -48,7 +48,7 @@ const productlist = [
             pic:'images/hair-scrunchie.jpg',
             alt: 'hair-scrunchie'
         }
-    },
+    }/*,
     {
         id: 6,
         name: "Камера Instax",
