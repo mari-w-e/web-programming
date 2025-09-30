@@ -4,6 +4,7 @@ html, body {
     display: flex;
     flex-direction: column;
     scroll-behavior: smooth;
+    background-color: #eca2e2;
 }
 
 ul {
@@ -11,8 +12,9 @@ ul {
 }
 
 header {
-    background-color: #2c3e50;
+    background-color: #9b2d30;
     color: white;
+    font-family: 'Smooth Curve', sans-serif;
 }
 
 .container {
@@ -44,6 +46,7 @@ header {
     padding: 8px 12px;
     border-radius: 4px;
     transition: background 0.3s;
+    font-family: 'Smooth Curve', sans-serif;
 }
 
 .navbar_menu li a:hover {
@@ -96,15 +99,15 @@ h2 {
     color: #2c3e50;
 }
 
-/* ===== Кнопки ===== */
 button {
-    background: #2c3e50;
-    color: #fff;
+    background: #9b2d30;
+    color: white;
     border: none;
     border-radius: 4px;
     padding: 8px 12px;
     cursor: pointer;
     transition: background 0.3s;
+    font-family: 'Smooth Curve', sans-serif;
 }
 
 button:hover {
@@ -123,8 +126,8 @@ button.remove:hover {
     display: inline-block;
     width: 50%;
     padding: 12px 20px;
-    background: #27ae60;
-    color: #fff;
+    background: #9b2d30;
+    color: white;
     font-size: 16px;
     font-weight: 600;
     border: none;
@@ -132,6 +135,7 @@ button.remove:hover {
     cursor: pointer;
     text-align: center;
     transition: background 0.3s, transform 0.1s;
+    font-family: 'Smooth Curve', sans-serif;
 }
 
 .checkout-button:hover {
@@ -140,9 +144,10 @@ button.remove:hover {
 
 .checkout-button:active {
     transform: translateY(1px);
+    font-family: 'Smooth Curve', sans-serif;
+    color: white;
 }
 
-/* ===== Корзина ===== */
 .basket-list {
     list-style: none;
     padding: 0;
@@ -190,14 +195,14 @@ button.remove:hover {
 
 
 footer {
-    background: #2c3e50;
-    color: #fff;
+    background: #9b2d30;
+    color: white;
     text-align: center;
     padding: 12px 0;
+    font-family: 'Smooth Curve', sans-serif;
     font-size: 14px;
 }
 
-/* ===== Модалка ===== */
 .modal {
     display: none;
     position: fixed;
