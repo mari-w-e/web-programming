@@ -5,7 +5,7 @@ const productlist = [
         price: 500,
         description: "айс латте с карамельным сиропом",
         img: {
-            pic: '../images/ice latte.jpg',
+            pic: '../images/ice-latte.jpg',
             alt: 'ice latte'
         }
     },
@@ -15,7 +15,7 @@ const productlist = [
         price: 500,
         description: "айс матча латте",
         img: {
-            pic:'images/matcha latte.jpg',
+            pic:'../images/matcha-latte.jpg',
             alt: 'matcha latte'
         }
     }, 
@@ -25,7 +25,7 @@ const productlist = [
         price: 3000,
         description: "Бальзам для губ в оттенке "вареная сгущенка",
         img: {
-            pic:'images/lip balm.jpg',
+            pic:'../images/lip-balm.jpg',
             alt: '<lip balm'
         }
     }
