@@ -68,8 +68,7 @@ const productlist = [
             pic:'images/set-of-rings.jpg',
             alt: 'set-of-rings'
         }
-    },
-    
+    }
 ];
 const basket = [];
 const catalogList = document.getElementById('catalog-list');
