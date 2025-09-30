@@ -38,7 +38,7 @@ const productlist = [
             pic:'images/claw-clip.jpg',
             alt: 'claw-clip'
         }
-    },
+    }/*,
     {
         id: 5,
         name: "Шелковая резинка для волос",
@@ -48,7 +48,7 @@ const productlist = [
             pic:'images/hair-scrunchie.jpg',
             alt: 'hair-scrunchie'
         }
-    }/*,
+    },
     {
         id: 6,
         name: "Камера Instax",
