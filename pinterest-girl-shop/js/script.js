@@ -15,7 +15,7 @@ const productlist = [
         price: 500,
         description: "айс матча латте",
         img: {
-            pic:'../images/matcha-latte.jpg',
+            pic:'images/matcha-latte.jpg',
             alt: 'matcha latte'
         }
     }, 
@@ -25,10 +25,51 @@ const productlist = [
         price: 3000,
         description: "Бальзам для губ в оттенке 'вареная сгущенка' ",
         img: {
-            pic:'../images/lip-balm.jpg',
+            pic:'images/lip-balm.jpg',
             alt: 'lip balm'
         }
+    },
+    {
+        id: 4,
+        name: "Крабики для волос",
+        price: 2000,
+        description: "Набор из 4 крабиков для волос",
+        img: {
+            pic:'images/claw-clip.jpg',
+            alt: 'claw-clip'
+        }
+    },
+    {
+        id: 5,
+        name: "Шелковая резинка для волос",
+        price: 300,
+        description: "Шелковая резинка, которая не травмирует волосы",
+        img: {
+            pic:'images/hair-scrunchie.jpg',
+            alt: 'hair-scrunchie'
+        }
     }
+    {
+        id: 6,
+        name: "Камера Instax",
+        price: 50000,
+        description: "Камера для винтажных фото",
+        img: {
+            pic:'images/photo-camera.jpg',
+            alt: 'photo-camera'
+        }
+    },
+        {
+        id: 7,
+        name: "Набор колец",
+        price: 3000,
+        description: "Набор колец (бижутерия)",
+        img: {
+            pic:'images/set-of-rings.jpg',
+            alt: 'set-of-rings'
+        }
+    },
+    
 ];
 const basket = [];
 const catalogList = document.getElementById('catalog-list');
