@@ -28,7 +28,7 @@ const productlist = [
             pic:'images/lip-balm.jpg',
             alt: 'lip balm'
         }
-    },
+    }/*,
     {
         id: 4,
         name: "Крабики для волос",
@@ -59,7 +59,7 @@ const productlist = [
             alt: 'photo-camera'
         }
     },
-        {
+    {
         id: 7,
         name: "Набор колец",
         price: 3000,
@@ -68,7 +68,7 @@ const productlist = [
             pic:'images/set-of-rings.jpg',
             alt: 'set-of-rings'
         }
-    }
+    }*/
 ];
 const basket = [];
 const catalogList = document.getElementById('catalog-list');
