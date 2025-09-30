@@ -5,7 +5,7 @@ const productlist = [
         price: 500,
         description: "айс латте с карамельным сиропом",
         img: {
-            pic: '..images/ice latte.jpg',
+            pic: '../images/ice latte.jpg',
             alt: 'ice latte'
         }
     },
