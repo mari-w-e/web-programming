@@ -18,9 +18,20 @@ const productlist = [
             pic:'images/matcha-latte.jpg',
             alt: 'matcha latte'
         }
-    }, 
+    },
+
     {
         id: 3,
+        name: "Крабики для волос",
+        price: 2000,
+        description: "Набор из 4 крабиков для волос",
+        img: {
+            pic:'images/claw-clip.jpg',
+            alt: 'claw-clip'
+        }
+    },
+    {
+        id: 4,
         name: "Бальзам для губ",
         price: 3000,
         description: "Бальзам для губ в оттенке 'вареная сгущенка' ",
@@ -29,16 +40,8 @@ const productlist = [
             alt: 'lip balm'
         }
     },
-    {
-        id: 4,
-        name: "Крабики для волос",
-        price: 2000,
-        description: "Набор из 4 крабиков для волос",
-        img: {
-            pic:'images/claw-clip.jpg',
-            alt: 'claw-clip'
-        }
-    }/*,
+
+    
     {
         id: 5,
         name: "Шелковая резинка для волос",
@@ -68,7 +71,7 @@ const productlist = [
             pic:'images/set-of-rings.jpg',
             alt: 'set-of-rings'
         }
-    }*/
+    }
 ];
 const basket = [];
 const catalogList = document.getElementById('catalog-list');
