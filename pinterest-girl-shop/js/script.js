@@ -19,7 +19,6 @@ const productlist = [
             alt: 'matcha latte'
         }
     },
-
     {
         id: 3,
         name: "Крабики для волос",
@@ -40,8 +39,6 @@ const productlist = [
             alt: 'lip balm'
         }
     },
-
-    
     {
         id: 5,
         name: "Шелковая резинка для волос",
