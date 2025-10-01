@@ -4,7 +4,7 @@ html, body {
     display: flex;
     flex-direction: column;
     scroll-behavior: smooth;
-    background-color: #eca2e2;
+    background-color: #f5b8e1;
 }
 
 ul {
@@ -12,7 +12,7 @@ ul {
 }
 
 header {
-    background-color: #9b2d30;
+    background-color: #4d0011;
     color: white;
     font-family: 'Smooth Curve', sans-serif;
 }
@@ -50,7 +50,7 @@ header {
 }
 
 .navbar_menu li a:hover {
-    background: #34495e;
+    background: #f5b8e1;
 }
 
 main {
@@ -100,7 +100,7 @@ h2 {
 }
 
 button {
-    background: #9b2d30;
+    background: #4d0011;
     color: white;
     border: none;
     border-radius: 4px;
@@ -111,22 +111,22 @@ button {
 }
 
 button:hover {
-    background: #34495e;
+    background: #f5b8e1;
 }
 
 button.remove {
-    background: #c0392b;
+    background: #4d0011;
 }
 
 button.remove:hover {
-    background: #e74c3c;
+    background: #4d0011;
 }
 
 .checkout-button {
     display: inline-block;
     width: 50%;
     padding: 12px 20px;
-    background: #9b2d30;
+    background: #4d0011;
     color: white;
     font-size: 16px;
     font-weight: 600;
@@ -139,7 +139,7 @@ button.remove:hover {
 }
 
 .checkout-button:hover {
-    background: #2ecc71;
+    background: #4d0011;
 }
 
 .checkout-button:active {
@@ -195,7 +195,7 @@ button.remove:hover {
 
 
 footer {
-    background: #9b2d30;
+    background: #4d0011;
     color: white;
     text-align: center;
     padding: 12px 0;
@@ -246,7 +246,7 @@ footer {
 .modal-content h2 {
     margin: 0 28px 12px 0;
     font-size: 18px;
-    color: #2c3e50;
+    color: #4d0011;
     text-align: center;
 }
 
@@ -273,7 +273,7 @@ footer {
 }
 
 .modal-content input:focus {
-    border-color: #2c3e50;
+    border-color: #4d0011;
     box-shadow: 0 0 0 3px rgba(44,62,80,.15);
 }
 
@@ -282,7 +282,7 @@ footer {
     height: 44px;
     border: 0;
     border-radius: 10px;
-    background: #2c3e50;
+    background: #4d0011;
     color: #fff;
     font-size: 15px;
     font-weight: 600;
@@ -301,7 +301,7 @@ footer {
 .success {
     display: none;
     text-align: center;
-    color: #27ae60;
+    color: #4d0011;
     font-weight: bold;
     margin-top: 10px;
     font-size: 16px;
