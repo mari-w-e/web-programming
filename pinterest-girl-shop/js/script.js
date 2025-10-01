@@ -9,8 +9,18 @@ const productlist = [
             alt: 'ice latte'
         }
     },
-    {   
+    {
         id: 2,
+        name: "Бальзам для губ",
+        price: 3000,
+        description: "Бальзам для губ в оттенке 'вареная сгущенка' ",
+        img: {
+            pic:'images/lip-balm.jpg',
+            alt: 'lip balm'
+        }
+    },
+    {   
+        id: 3,
         name: "Matcha Latte",
         price: 500,
         description: "айс матча латте",
@@ -20,23 +30,13 @@ const productlist = [
         }
     },
     {
-        id: 3,
+        id: 4,
         name: "Крабики для волос",
         price: 2000,
         description: "Набор из 4 крабиков для волос",
         img: {
             pic:'images/claw-clip.jpg',
             alt: 'claw-clip'
-        }
-    },
-    {
-        id: 4,
-        name: "Бальзам для губ",
-        price: 3000,
-        description: "Бальзам для губ в оттенке 'вареная сгущенка' ",
-        img: {
-            pic:'images/lip-balm.jpg',
-            alt: 'lip balm'
         }
     },
     {
