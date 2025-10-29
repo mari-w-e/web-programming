@@ -287,8 +287,70 @@
 
     filtered.forEach(task=>{
       const li = el('li', {className:'task-item', attrs:{draggable:'true'}});
-      
+
+      li.addEventListener('dragstart', (e) => {
+        dragSrcEl = li;
+        e.dataTransfer.effectAllowed = 'move';
+        li.style.opacity = '0.4';
+      });
+      li.addEventListener('dragend', () => {
+        li.style.opacity = '';
+      });
+      li.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      });
+      li.addEventListener('drop', (e) => {
+        e.stopPropagation();
+        if(dragSrcEl !== li){
+          const srcIndex = tasks.findIndex(t => t.id === task.id);
+          const dstIndex = tasks.findIndex(t => t.id === task.id);
+
+          const dragTask = tasks.find(t => t.id === task.id);
+          const srcTaskIndex = tasks.findIndex(t=>t.id===dragTask.id);
+          const dstTaskIndex = tasks.findIndex(t=>t.id===task.id);
+          tasks.splice(srcTaskIndex,1);
+          tasks.splice(dstTaskIndex,0,dragTask);
+
+          tasks.forEach((t,i)=>t.order=i);
+          saveTasks(tasks);
+          renderTasks();
+        }
+        return false;
+      });
+
       const checkbox = el('input', {className:'task-checkbox', attrs:{type:'checkbox'}});
+      checkbox.checked = !!task.completed;
+      checkbox.addEventListener('change', ()=>{ task.completed=checkbox.checked; saveTasks(tasks); renderTasks(); });
+  
+      const content = el('div', {className:'task-content'});
+      const titleSpan = el('div', {className:'task-title', text:task.title||'(Без названия)'});
+      if(task.completed) titleSpan.classList.add('completed');
+      const dateSpan = el('div', {className:'task-date', text: task.date ? formatDateReadable(task.date) : ''});
+      content.append(titleSpan,dateSpan);
+  
+      const leftBox = el('div',{className:'task-left'});
+      leftBox.append(checkbox, content);
+  
+      const actions = el('div',{className:'task-actions'});
+      const editBtn = el('button',{className:'icon-btn', attrs:{title:'Редактировать'}}); editBtn.textContent='✏️';
+      editBtn.addEventListener('click',()=>enterEditMode(li,task));
+      const delBtn = el('button',{className:'icon-btn', attrs:{title:'Удалить'}}); delBtn.textContent='🗑️';
+      delBtn.addEventListener('click',()=>{
+        tasks = tasks.filter(t=>t.id!==task.id);
+        tasks.forEach((t,i)=>t.order=i);
+        saveTasks(tasks);
+        renderTasks();
+      });
+      actions.append(editBtn,delBtn);
+  
+      li.append(leftBox,actions);
+      tasksList.appendChild(li);
+    });
+  }
+      
+      
+      /*const checkbox = el('input', {className:'task-checkbox', attrs:{type:'checkbox'}});
       checkbox.checked = !!task.completed;
       checkbox.addEventListener('change', ()=>{ task.completed=checkbox.checked; saveTasks(tasks); renderTasks(); });
 
@@ -316,7 +378,7 @@
       li.append(leftBox,actions);
       tasksList.appendChild(li);
     });
-  }
+  }*/
 
   function enterEditMode(li, task){
     li.innerHTML='';
