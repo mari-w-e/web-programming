@@ -107,6 +107,7 @@
       gap:8px;
       flex-wrap:wrap;
       padding: 0; 
+      width: 100%; 
       box-sizing: border-box;
     }
     input.task-input, input.date-input {
@@ -158,6 +159,8 @@
       flex-direction:column;
       gap:8px;
       min-height:60px;
+      width: 100%;
+      box-sizing: border-box;
     }
     .task-item {
       display:flex;
@@ -167,6 +170,7 @@
       border-radius:8px;
       border:1px solid #f0f0f0;
       background: #fafafa;
+      width: 100%;     
       box-sizing: border-box;
     }
     .task-left {
