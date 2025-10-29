@@ -51,7 +51,6 @@
     return 't_' + Math.random().toString(36).slice(2, 9);
   }
 
-  // ====== Styles ======
   const styles = `
     :root {
       --bg: #f7c774;
@@ -279,46 +278,48 @@
         if(currentSearch && !t.title.toLowerCase().includes(currentSearch.toLowerCase())) return false;
         return true;
       });
-
+  
     if(sortOrder==='asc') filtered.sort((a,b)=> a.date? (b.date? new Date(a.date)-new Date(b.date): -1):-1);
     else if(sortOrder==='desc') filtered.sort((a,b)=> a.date? (b.date? new Date(b.date)-new Date(a.date): -1):-1);
-
+  
     if(filtered.length===0){ tasksList.appendChild(noTasks); return; }
-
+  
+    let dragTaskId = null;
+  
     filtered.forEach(task=>{
       const li = el('li', {className:'task-item', attrs:{draggable:'true'}});
-
-      li.addEventListener('dragstart', (e) => {
-        dragSrcEl = li;
+  
+      // ====== Drag and Drop ======
+      li.addEventListener('dragstart', e => {
+        dragTaskId = task.id;
         e.dataTransfer.effectAllowed = 'move';
         li.style.opacity = '0.4';
       });
+  
       li.addEventListener('dragend', () => {
         li.style.opacity = '';
       });
-      li.addEventListener('dragover', (e) => {
+  
+      li.addEventListener('dragover', e => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
       });
-      li.addEventListener('drop', (e) => {
+  
+      li.addEventListener('drop', e => {
         e.stopPropagation();
-        if(dragSrcEl !== li){
-          const srcIndex = tasks.findIndex(t => t.id === task.id);
+        if(dragTaskId && dragTaskId !== task.id){
+          const srcIndex = tasks.findIndex(t => t.id === dragTaskId);
           const dstIndex = tasks.findIndex(t => t.id === task.id);
-
-          const dragTask = tasks.find(t => t.id === task.id);
-          const srcTaskIndex = tasks.findIndex(t=>t.id===dragTask.id);
-          const dstTaskIndex = tasks.findIndex(t=>t.id===task.id);
-          tasks.splice(srcTaskIndex,1);
-          tasks.splice(dstTaskIndex,0,dragTask);
-
+          const [dragTask] = tasks.splice(srcIndex, 1);
+          tasks.splice(dstIndex, 0, dragTask);
+  
           tasks.forEach((t,i)=>t.order=i);
           saveTasks(tasks);
           renderTasks();
         }
-        return false;
       });
-
+  
+      // ====== Task Content ======
       const checkbox = el('input', {className:'task-checkbox', attrs:{type:'checkbox'}});
       checkbox.checked = !!task.completed;
       checkbox.addEventListener('change', ()=>{ task.completed=checkbox.checked; saveTasks(tasks); renderTasks(); });
@@ -348,6 +349,7 @@
       tasksList.appendChild(li);
     });
   }
+
       
       
       /*const checkbox = el('input', {className:'task-checkbox', attrs:{type:'checkbox'}});
