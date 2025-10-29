@@ -256,9 +256,16 @@
       });
       actions.append(editBtn, delBtn);
 
+      const leftBox = el('div', { className: 'task-left' });
+      leftBox.style.display = 'flex';
+      leftBox.style.alignItems = 'center';
+      leftBox.style.gap = '10px';
+      leftBox.append(checkbox, content);
+    
       li.append(leftBox, actions);
       tasksList.appendChild(li);
     });
+
   }
 
   function enterEditMode(li, task) {
