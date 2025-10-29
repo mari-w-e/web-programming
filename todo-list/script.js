@@ -488,3 +488,5 @@
     inputTitle.value = '';
     inputDate.value = '';
     renderTasks();
+
+})();
