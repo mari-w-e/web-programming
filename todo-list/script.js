@@ -136,7 +136,7 @@
       border-radius:12px;
       box-shadow:var(--shadow);
       padding:16px;
-      box-sizing:border-box;
+      box-sizing: border-box;
       display:flex;
       flex-direction:column;
     }
@@ -218,6 +218,7 @@
       text-align:center;
       color:var(--muted);
       padding:12px;
+      justify-content: center; // воооооот здесь
     }
     @media (max-width:480px) {
       .field-row { flex-direction:column; }
