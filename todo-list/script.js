@@ -171,6 +171,12 @@
       background: #fafafa;
       width: 100%;     
       box-sizing: border-box;
+      transition: background 0.12s, border-color 0.12s, transform 0.08s;
+    }
+    .task-item.drag-over {
+      border: 2px dashed #d49e2a;
+      background: #fff8e6;
+      transform: translateY(2px);
     }
     .task-left {
       display:flex;
@@ -263,14 +269,18 @@
 
   // ====== Логика ======
   let tasks = loadTasks();
-  tasks = tasks.map((t,i)=>({order:i,...t}));
+  // Если в хранилище нет поля order, добавляем
+  tasks = tasks.map((t,i)=>({order: typeof t.order === 'number' ? t.order : i, ...t}));
 
+  // sortOrder: 'asc' | 'desc' | 'custom'
   let sortOrder = 'asc';
   let currentFilter = 'all';
   let currentSearch = '';
 
   function renderTasks() {
     while(tasksList.firstChild) tasksList.removeChild(tasksList.firstChild);
+
+    // Сортируем копию по пользовательскому полю order, затем применяем фильтры
     let filtered = tasks.slice().sort((a,b)=>a.order-b.order)
       .filter(t=>{
         if(currentFilter==='active' && t.completed) return false;
@@ -278,61 +288,99 @@
         if(currentSearch && !t.title.toLowerCase().includes(currentSearch.toLowerCase())) return false;
         return true;
       });
-  
-    if(sortOrder==='asc') filtered.sort((a,b)=> a.date? (b.date? new Date(a.date)-new Date(b.date): -1):-1);
-    else if(sortOrder==='desc') filtered.sort((a,b)=> a.date? (b.date? new Date(b.date)-new Date(a.date): -1):-1);
-  
+
+    // Если включена сортировка по дате — переупорядочиваем визуальную копию,
+    // но не трогаем оригинальный массив tasks (вручную перетаскивать -> custom)
+    if(sortOrder==='asc') {
+      filtered.sort((a,b)=>{
+        if(!a.date && !b.date) return 0;
+        if(!a.date) return -1;
+        if(!b.date) return 1;
+        return new Date(a.date) - new Date(b.date);
+      });
+    } else if(sortOrder==='desc') {
+      filtered.sort((a,b)=>{
+        if(!a.date && !b.date) return 0;
+        if(!a.date) return -1;
+        if(!b.date) return 1;
+        return new Date(b.date) - new Date(a.date);
+      });
+    } // if sortOrder==='custom' => оставляем по order
+
     if(filtered.length===0){ tasksList.appendChild(noTasks); return; }
-  
+
     let dragTaskId = null;
-  
+
     filtered.forEach(task=>{
       const li = el('li', {className:'task-item', attrs:{draggable:'true'}});
-  
+
       // ====== Drag and Drop ======
       li.addEventListener('dragstart', e => {
         dragTaskId = task.id;
         e.dataTransfer.effectAllowed = 'move';
+        // Указываем текст, чтобы firefox/браузеры корректно разрешали DnD
+        try { e.dataTransfer.setData('text/plain', dragTaskId); } catch (err) {}
         li.style.opacity = '0.4';
       });
-  
+
       li.addEventListener('dragend', () => {
         li.style.opacity = '';
+        // Удалим возможные классы drag-over у всех элементов
+        document.querySelectorAll('.task-item.drag-over').forEach(x=>x.classList.remove('drag-over'));
       });
-  
+
       li.addEventListener('dragover', e => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
+        // визуально помечаем текущую цель
+        li.classList.add('drag-over');
       });
-  
+
+      li.addEventListener('dragleave', () => {
+        li.classList.remove('drag-over');
+      });
+
       li.addEventListener('drop', e => {
+        e.preventDefault();
         e.stopPropagation();
-        if(dragTaskId && dragTaskId !== task.id){
-          const srcIndex = tasks.findIndex(t => t.id === dragTaskId);
-          const dstIndex = tasks.findIndex(t => t.id === task.id);
-          const [dragTask] = tasks.splice(srcIndex, 1);
-          tasks.splice(dstIndex, 0, dragTask);
-  
-          tasks.forEach((t,i)=>t.order=i);
-          saveTasks(tasks);
-          renderTasks();
-        }
+        li.classList.remove('drag-over');
+
+        if(!dragTaskId) return;
+        if(dragTaskId === task.id) return;
+
+        const srcIndex = tasks.findIndex(t => t.id === dragTaskId);
+        let dstIndex = tasks.findIndex(t => t.id === task.id);
+        if(srcIndex === -1 || dstIndex === -1) return;
+
+        // При удалении src элемент сдвигает индексы вправо -> корректируем dstIndex
+        const [dragTask] = tasks.splice(srcIndex, 1);
+        if (srcIndex < dstIndex) dstIndex = dstIndex - 1;
+        tasks.splice(dstIndex, 0, dragTask);
+
+        // После ручного перемещения считаем, что пользователь перешёл в "custom" порядок
+        sortOrder = 'custom';
+        sortBtn.textContent = 'Пользовательский порядок (перетащите для изменения)';
+
+        // Обновляем поля order и сохраняем
+        tasks.forEach((t,i)=>t.order=i);
+        saveTasks(tasks);
+        renderTasks();
       });
-  
+
       // ====== Task Content ======
       const checkbox = el('input', {className:'task-checkbox', attrs:{type:'checkbox'}});
       checkbox.checked = !!task.completed;
       checkbox.addEventListener('change', ()=>{ task.completed=checkbox.checked; saveTasks(tasks); renderTasks(); });
-  
+
       const content = el('div', {className:'task-content'});
       const titleSpan = el('div', {className:'task-title', text:task.title||'(Без названия)'});
       if(task.completed) titleSpan.classList.add('completed');
       const dateSpan = el('div', {className:'task-date', text: task.date ? formatDateReadable(task.date) : ''});
       content.append(titleSpan,dateSpan);
-  
+
       const leftBox = el('div',{className:'task-left'});
       leftBox.append(checkbox, content);
-  
+
       const actions = el('div',{className:'task-actions'});
       const editBtn = el('button',{className:'icon-btn', attrs:{title:'Редактировать'}}); editBtn.textContent='✏️';
       editBtn.addEventListener('click',()=>enterEditMode(li,task));
@@ -344,43 +392,11 @@
         renderTasks();
       });
       actions.append(editBtn,delBtn);
-  
+
       li.append(leftBox,actions);
       tasksList.appendChild(li);
     });
   }
-
-      
-      
-      /*const checkbox = el('input', {className:'task-checkbox', attrs:{type:'checkbox'}});
-      checkbox.checked = !!task.completed;
-      checkbox.addEventListener('change', ()=>{ task.completed=checkbox.checked; saveTasks(tasks); renderTasks(); });
-
-      const content = el('div', {className:'task-content'});
-      const titleSpan = el('div', {className:'task-title', text:task.title||'(Без названия)'});
-      if(task.completed) titleSpan.classList.add('completed');
-      const dateSpan = el('div', {className:'task-date', text: task.date ? formatDateReadable(task.date) : ''});
-      content.append(titleSpan,dateSpan);
-
-      const leftBox = el('div',{className:'task-left'});
-      leftBox.append(checkbox, content);
-
-      const actions = el('div',{className:'task-actions'});
-      const editBtn = el('button',{className:'icon-btn', attrs:{title:'Редактировать'}}); editBtn.textContent='✏️';
-      editBtn.addEventListener('click',()=>enterEditMode(li,task));
-      const delBtn = el('button',{className:'icon-btn', attrs:{title:'Удалить'}}); delBtn.textContent='🗑️';
-      delBtn.addEventListener('click',()=>{
-        tasks = tasks.filter(t=>t.id!==task.id);
-        tasks.forEach((t,i)=>t.order=i);
-        saveTasks(tasks);
-        renderTasks();
-      });
-      actions.append(editBtn,delBtn);
-
-      li.append(leftBox,actions);
-      tasksList.appendChild(li);
-    });
-  }*/
 
   function enterEditMode(li, task){
     li.innerHTML='';
@@ -422,8 +438,13 @@
   filterSelect.addEventListener('change',()=>{currentFilter=filterSelect.value; renderTasks();});
   searchInput.addEventListener('input',()=>{currentSearch=searchInput.value; renderTasks();});
   sortBtn.addEventListener('click',()=>{
-    sortOrder = sortOrder==='asc'?'desc':'asc';
-    sortBtn.textContent = sortOrder==='asc'?'Сортировать по дате ↑':'Сортировать по дате ↓';
+    // Если был custom (ручной порядок) — возвращаем на asc
+    if(sortOrder === 'custom') {
+      sortOrder = 'asc';
+    } else {
+      sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    }
+    sortBtn.textContent = sortOrder==='asc' ? 'Сортировать по дате ↑' : (sortOrder==='desc' ? 'Сортировать по дате ↓' : 'Пользовательский порядок');
     renderTasks();
   });
 
