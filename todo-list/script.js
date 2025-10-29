@@ -106,6 +106,8 @@
       display:flex;
       gap:8px;
       flex-wrap:wrap;
+      padding: 0; 
+      box-sizing: border-box;
     }
     input.task-input, input.date-input {
       flex:1;
@@ -165,6 +167,7 @@
       border-radius:8px;
       border:1px solid #f0f0f0;
       background: #fafafa;
+      box-sizing: border-box;
     }
     .task-left {
       display:flex;
