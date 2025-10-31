@@ -1,220 +1,111 @@
-function create(tag, props = {}) {
-  const el = document.createElement(tag);
-  if (props.className) el.className = props.className;
-  if (props.text) el.textContent = props.text;
-  if (props.type) el.type = props.type;
-  if (props.placeholder) el.placeholder = props.placeholder;
-  if (props.value) el.value = props.value;
-  if (props.attrs) {
-    for (const [key, val] of Object.entries(props.attrs)) el.setAttribute(key, val);
-  }
-  return el;
+const STORAGE_KEY = 'todo_v1';
+
+function el(tag, props = {}) {
+  const elem = document.createElement(tag);
+  Object.entries(props).forEach(([key, val]) => {
+    if (key === 'className') elem.className = val;
+    else if (key === 'text') elem.textContent = val;
+    else if (key === 'type') elem.type = val;
+    else if (key === 'placeholder') elem.placeholder = val;
+    else if (key === 'id') elem.id = val;
+    else if (key === 'attrs') Object.entries(val).forEach(([k, v]) => elem.setAttribute(k, v));
+  });
+  return elem;
 }
 
-function saveTasks(tasks) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+function save(tasks) { localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }
+function load() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; } }
+
+function formatDateInput(val) {
+  if (!val) return '';
+  const d = new Date(val);
+  if (isNaN(d)) return '';
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
-function loadTasks() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  } catch {
-    return [];
-  }
-}
-
-function formatDate(val) {
+function formatDateReadable(val) {
   if (!val) return '';
   const d = new Date(val);
   if (isNaN(d)) return '';
   return d.toLocaleDateString('ru-RU');
 }
 
-function formatDateInput(val) {
-  if (!val) return '';
-  const d = new Date(val);
-  if (isNaN(d)) return '';
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const da = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${da}`;
-}
+function genId() { return 't_' + Math.random().toString(36).slice(2,9); }
 
-function genId() {
-  return 't_' + Math.random().toString(36).substr(2, 9);
-}
+const main = el('main', { className: 'app-root' });
+const titleH1 = el('h1', { className: 'app-title', text: 'TODO list' });
 
-const app = create('main');
-const title = create('h1', { text: 'Список задач' });
-app.appendChild(title);
+const createCard = el('section', { className: 'todo-card' });
+const form = el('form', { className: 'todo-form', attrs: { action:'#', 'aria-label':'Добавить задачу' } });
 
-const addCard = create('section', { className: 'card' });
-const form = create('form');
-const row = create('div', { className: 'row' });
-const titleInput = create('input', { attrs: { type: 'text', placeholder: 'Название задачи' } });
-const dateInput = create('input', { attrs: { type: 'date' } });
-row.append(titleInput, dateInput);
-const addBtn = create('button', { className: 'add', attrs: { type: 'submit' }, text: 'Добавить задачу' });
-form.append(row, addBtn);
-addCard.append(form);
-app.appendChild(addCard);
+const fieldRow = el('div', { className: 'field-row' });
+const inputTitle = el('input', { className:'task-input', attrs:{type:'text', placeholder:'Название задачи'} });
+const inputDate = el('input', { className:'date-input', attrs:{type:'date', placeholder:'Дата задачи'} });
+fieldRow.append(inputTitle, inputDate);
 
-const listCard = create('section', { className: 'card' });
-const controls = create('div', { className: 'controls' });
-const filter = create('select');
-filter.innerHTML = '<option value="all">Все</option><option value="active">Активные</option><option value="done">Выполненные</option>';
-const sortBtn = create('button', { attrs: { type: 'button' }, text: 'Сортировать по дате ↑' });
-const search = create('input', { attrs: { type: 'search', placeholder: 'Поиск по названию' } });
-controls.append(filter, sortBtn, search);
-const taskList = create('ul', { className: 'task-list' });
-const emptyMsg = create('div', { className: 'no-tasks', text: 'Задач нет' });
-listCard.append(controls, taskList);
-app.appendChild(listCard);
-document.body.appendChild(app);
+const addBtn = el('button', { className:'primary-btn', attrs:{type:'submit'}, text:'Добавить задачу' });
+form.append(fieldRow, addBtn);
+createCard.append(form);
 
-let tasks = loadTasks().map((t, i) => ({ order: i, ...t }));
+const tasksCard = el('section', { className:'tasks-card' });
+const controls = el('div', { className:'controls' });
+const filterSelect = el('select', { className:'filter-select' });
+filterSelect.innerHTML = '<option value="all">Все</option><option value="active">Активные</option><option value="done">Выполненные</option>';
+const sortBtn = el('button', { className:'sort-btn', attrs:{type:'button'}, text:'Сортировать по дате ↑' });
+const searchInput = el('input', { className:'search-input', attrs:{type:'search', placeholder:'Поиск по названию'} });
+controls.append(filterSelect, sortBtn, searchInput);
+
+const tasksList = el('ul', { className:'tasks-list', attrs:{role:'list'} });
+const noTasks = el('div', { className:'no-tasks', text:'Задач нет' });
+tasksCard.append(controls, tasksList);
+
+main.append(titleH1, createCard, tasksCard);
+document.body.appendChild(main);
+
+let tasks = load().map((t,i) => ({ order: typeof t.order === 'number' ? t.order : i, ...t }));
 let sortOrder = 'asc';
 let currentFilter = 'all';
-let searchQuery = '';
+let currentSearch = '';
 
-function showTasks() {
-  taskList.innerHTML = '';
-  let list = tasks.slice().sort((a, b) => a.order - b.order);
-  list = list.filter(t => {
-    if (currentFilter === 'active' && t.done) return false;
-    if (currentFilter === 'done' && !t.done) return false;
-    if (searchQuery && !t.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    return true;
-  });
+function renderTasks() {
+  tasksList.innerHTML = '';
+  let filtered = tasks.slice().sort((a,b)=>a.order-b.order)
+    .filter(t=>{
+      if(currentFilter==='active' && t.completed) return false;
+      if(currentFilter==='done' && !t.completed) return false;
+      if(currentSearch && !t.title.toLowerCase().includes(currentSearch.toLowerCase())) return false;
+      return true;
+    });
 
-  if (sortOrder !== 'custom') {
-    list.sort((a, b) => {
-      if (!a.date && !b.date) return 0;
-      if (!a.date) return -1;
-      if (!b.date) return 1;
-      return sortOrder === 'asc' ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date);
+  if(sortOrder==='asc' || sortOrder==='desc') {
+    filtered.sort((a,b)=>{
+      if(!a.date && !b.date) return 0;
+      if(!a.date) return -1;
+      if(!b.date) return 1;
+      return sortOrder==='asc' ? new Date(a.date)-new Date(b.date) : new Date(b.date)-new Date(a.date);
     });
   }
 
-  if (list.length === 0) {
-    taskList.append(emptyMsg);
-    return;
-  }
+  if(filtered.length===0){ tasksList.append(noTasks); return; }
 
   let dragId = null;
 
-  list.forEach(t => {
-    const item = create('li', { className: 'task', attrs: { draggable: 'true' } });
+  filtered.forEach(task=>{
+    const li = el('li', { className:'task-item', attrs:{draggable:'true'} });
 
-    item.addEventListener('dragstart', e => {
-      dragId = t.id;
-      e.dataTransfer.effectAllowed = 'move';
-      item.style.opacity = '0.5';
+    li.addEventListener('dragstart', e => { dragId=task.id; e.dataTransfer.effectAllowed='move'; li.style.opacity='0.4'; });
+    li.addEventListener('dragend', () => { li.style.opacity=''; document.querySelectorAll('.task-item.drag-over').forEach(x=>x.classList.remove('drag-over')); });
+    li.addEventListener('dragover', e => { e.preventDefault(); li.classList.add('drag-over'); });
+    li.addEventListener('dragleave', () => li.classList.remove('drag-over'));
+    li.addEventListener('drop', e => {
+      e.preventDefault(); e.stopPropagation(); li.classList.remove('drag-over');
+      if(!dragId || dragId===task.id) return;
+      const from=tasks.findIndex(t=>t.id===dragId), to=tasks.findIndex(t=>t.id===task.id);
+      const [moved]=tasks.splice(from,1); if(from<to) tasks.splice(to-1,0,moved); else tasks.splice(to,0,moved);
+      tasks.forEach((t,i)=>t.order=i);
+      sortOrder='custom'; sortBtn.textContent='Сортировать по дате ↑';
+      save(tasks); renderTasks();
     });
 
-    item.addEventListener('dragend', () => {
-      dragId = null;
-      item.style.opacity = '1';
-      document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-    });
-
-    item.addEventListener('dragover', e => {
-      e.preventDefault();
-      item.classList.add('drag-over');
-    });
-
-    item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
-
-    item.addEventListener('drop', e => {
-      e.preventDefault();
-      item.classList.remove('drag-over');
-      if (!dragId || dragId === t.id) return;
-      const from = tasks.findIndex(x => x.id === dragId);
-      const to = tasks.findIndex(x => x.id === t.id);
-      const [moved] = tasks.splice(from, 1);
-      tasks.splice(to, 0, moved);
-      tasks.forEach((x, i) => (x.order = i));
-      sortOrder = 'custom';
-      saveTasks(tasks);
-      showTasks();
-    });
-
-    const left = create('div', { className: 'task-left' });
-    const check = create('input', { attrs: { type: 'checkbox' } });
-    check.checked = !!t.done;
-    const content = create('div', { className: 'task-content' });
-    const title = create('div', { className: 'task-title', text: t.title || '(Без названия)' });
-    if (t.done) title.classList.add('done');
-    const date = create('div', { className: 'task-date', text: formatDate(t.date) });
-    content.append(title, date);
-    left.append(check, content);
-
-    const actions = create('div', { className: 'task-actions' });
-    const edit = create('button', { className: 'icon', text: '✏️' });
-    const del = create('button', { className: 'icon', text: '❌' });
-    actions.append(edit, del);
-
-    check.addEventListener('change', () => {
-      t.done = check.checked;
-      saveTasks(tasks);
-      showTasks();
-    });
-
-    del.addEventListener('click', () => {
-      tasks = tasks.filter(x => x.id !== t.id);
-      tasks.forEach((x, i) => (x.order = i));
-      saveTasks(tasks);
-      showTasks();
-    });
-
-    edit.addEventListener('click', () => {
-      item.innerHTML = '';
-      const nameInput = create('input', { attrs: { type: 'text' }, value: t.title });
-      const dateInput = create('input', { attrs: { type: 'date' }, value: t.date });
-      const save = create('button', { className: 'add', text: 'Сохранить' });
-      save.addEventListener('click', () => {
-        if (!nameInput.value.trim() || !dateInput.value) return;
-        t.title = nameInput.value.trim();
-        t.date = dateInput.value;
-        saveTasks(tasks);
-        showTasks();
-      });
-      item.append(nameInput, dateInput, save);
-    });
-
-    item.append(left, actions);
-    taskList.append(item);
-  });
-}
-
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  const titleVal = titleInput.value.trim();
-  const dateVal = dateInput.value;
-  if (!titleVal || !dateVal) return;
-  const task = { id: genId(), title: titleVal, date: dateVal, done: false, order: tasks.length };
-  tasks.push(task);
-  saveTasks(tasks);
-  titleInput.value = '';
-  dateInput.value = '';
-  showTasks();
-});
-
-filter.addEventListener('change', () => {
-  currentFilter = filter.value;
-  showTasks();
-});
-
-search.addEventListener('input', () => {
-  searchQuery = search.value;
-  showTasks();
-});
-
-sortBtn.addEventListener('click', () => {
-  if (sortOrder === 'custom') sortOrder = 'asc';
-  else sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-  sortBtn.textContent = sortOrder === 'asc' ? 'Сортировать по дате ↑' : 'Сортировать по дате ↓';
-  showTasks();
-});
-
-showTasks();
+    const checkbox = el('input', { className:'task-checkbox', attrs:{type:'checkbox'} });
+    checkbox.checked=!!task.completed
