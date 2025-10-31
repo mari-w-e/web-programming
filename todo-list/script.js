@@ -218,7 +218,7 @@
       text-align:center;
       color:var(--muted);
       padding:12px;
-      justify-content: center; // воооооот здесь
+      justify-content: center;
     }
     @media (max-width:480px) {
       .field-row { flex-direction:column; }
@@ -332,7 +332,6 @@
       li.addEventListener('dragover', e => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
-        // визуально помечаем текущую цель
         li.classList.add('drag-over');
       });
 
@@ -357,7 +356,7 @@
         tasks.splice(dstIndex, 0, dragTask);
 
         sortOrder = 'custom';
-        sortBtn.textContent = 'Вернуться к сортировке';
+        sortBtn.textContent = 'Сортировать по дате ↑';
 
         tasks.forEach((t,i)=>t.order=i);
         saveTasks(tasks);
