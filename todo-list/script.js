@@ -1,7 +1,7 @@
 (function () {
-  const STORAGE_KEY = 'todo_app_tasks_v1';
+  const STORAGE_KEY = 'todo_v1';
 
-  function el(tag, props = {}) {
+  function makeElement(tag, props = {}) {
     const elem = document.createElement(tag);
     if (props.className) elem.className = props.className;
     if (props.text) elem.textContent = props.text;
@@ -18,13 +18,22 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
   }
 
-  function loadTasks() {
+  /*function loadTasks() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     try {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed;
       return [];
+    } catch {
+      return [];
+    }
+  }*/
+
+  function loadTasks() {
+    try {
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      return Array.isArray(data) ? data : [];
     } catch {
       return [];
     }
@@ -52,37 +61,37 @@
   }
 
 
-  const main = el('main', { className: 'app-root' });
-  const titleH1 = el('h1', { className: 'app-title', text: 'TODO list' });
+  const main = makeElement('main', { className: 'app-root' });
+  const titleH1 = makeElement('h1', { className: 'app-title', text: 'TODO list' });
 
 
-  const createCard = el('section', { className: 'todo-card' });
-  const form = el('form', { className: 'todo-form', attrs: { action: '#', 'aria-label':'Добавить задачу' } });
+  const createCard = makeElement('section', { className: 'todo-card' });
+  const form = makeElement('form', { className: 'todo-form', attrs: { action: '#', 'aria-label':'Добавить задачу' } });
 
-  const fieldRow = el('div', { className: 'field-row' });
-  const inputTitle = el('input', { className: 'task-input', attrs:{type:'text', placeholder:'Название задачи'} });
-  const inputDate = el('input', { className: 'date-input', attrs:{type:'date', placeholder:'Дата задачи'} });
+  const fieldRow = makeElement('div', { className: 'field-row' });
+  const inputTitle = makeElement('input', { className: 'task-input', attrs:{type:'text', placeholder:'Название задачи'} });
+  const inputDate = makeElement('input', { className: 'date-input', attrs:{type:'date', placeholder:'Дата задачи'} });
   fieldRow.append(inputTitle, inputDate);
 
-  const addBtn = el('button', { className:'primary-btn', attrs:{type:'submit'} });
+  const addBtn = makeElement('button', { className:'primary-btn', attrs:{type:'submit'} });
   addBtn.textContent = 'Добавить задачу';
 
   form.append(fieldRow, addBtn);
   createCard.appendChild(form);
 
 
-  const tasksCard = el('section', { className: 'tasks-card' });
+  const tasksCard = makeElement('section', { className: 'tasks-card' });
 
-  const controls = el('div', { className: 'controls' });
-  const filterSelect = el('select', { className: 'filter-select' });
+  const controls = makeElement('div', { className: 'controls' });
+  const filterSelect = makeElement('select', { className: 'filter-select' });
   filterSelect.innerHTML = '<option value="all">Все</option><option value="active">Активные</option><option value="done">Выполненные</option>';
-  const sortBtn = el('button', { className:'sort-btn', attrs:{type:'button'} }); sortBtn.textContent='Сортировать по дате ↑';
-  const searchInput = el('input', { className:'search-input', attrs:{type:'search', placeholder:'Поиск по названию'} });
+  const sortBtn = makeElement('button', { className:'sort-btn', attrs:{type:'button'} }); sortBtn.textContent='Сортировать по дате ↑';
+  const searchInput = makeElement('input', { className:'search-input', attrs:{type:'search', placeholder:'Поиск по названию'} });
 
   controls.append(filterSelect, sortBtn, searchInput);
 
-  const tasksList = el('ul', { className:'tasks-list', attrs:{role:'list'} });
-  const noTasks = el('div', { className:'no-tasks', text:'Задач нет' });
+  const tasksList = makeElement('ul', { className:'tasks-list', attrs:{role:'list'} });
+  const noTasks = makeElement('div', { className:'no-tasks', text:'Задач нет' });
 
   tasksCard.append(controls, tasksList);
 
@@ -133,7 +142,7 @@
     let dragTaskId = null;
 
     filtered.forEach(task=>{
-      const li = el('li', {className:'task-item', attrs:{draggable:'true'}});
+      const li = makeElement('li', {className:'task-item', attrs:{draggable:'true'}});
 
 
       li.addEventListener('dragstart', e => {
@@ -184,23 +193,23 @@
         renderTasks();
       });
 
-      const checkbox = el('input', {className:'task-checkbox', attrs:{type:'checkbox'}});
+      const checkbox = makeElement('input', {className:'task-checkbox', attrs:{type:'checkbox'}});
       checkbox.checked = !!task.completed;
       checkbox.addEventListener('change', ()=>{ task.completed=checkbox.checked; saveTasks(tasks); renderTasks(); });
 
-      const content = el('div', {className:'task-content'});
-      const titleSpan = el('div', {className:'task-title', text:task.title||'(Без названия)'});
+      const content = makeElement('div', {className:'task-content'});
+      const titleSpan = makeElement('div', {className:'task-title', text:task.title||'(Без названия)'});
       if(task.completed) titleSpan.classList.add('completed');
-      const dateSpan = el('div', {className:'task-date', text: task.date ? formatDateReadable(task.date) : ''});
+      const dateSpan = makeElement('div', {className:'task-date', text: task.date ? formatDateReadable(task.date) : ''});
       content.append(titleSpan,dateSpan);
 
-      const leftBox = el('div',{className:'task-left'});
+      const leftBox = makeElement('div',{className:'task-left'});
       leftBox.append(checkbox, content);
 
-      const actions = el('div',{className:'task-actions'});
-      const editBtn = el('button',{className:'icon-btn', attrs:{title:'Редактировать'}}); editBtn.textContent='✏️';
+      const actions = makeElement('div',{className:'task-actions'});
+      const editBtn = makeElement('button',{className:'icon-btn', attrs:{title:'Редактировать'}}); editBtn.textContent='✏️';
       editBtn.addEventListener('click',()=>enterEditMode(li,task));
-      const delBtn = el('button',{className:'icon-btn', attrs:{title:'Удалить'}}); delBtn.textContent='❌';
+      const delBtn = makeElement('button',{className:'icon-btn', attrs:{title:'Удалить'}}); delBtn.textContent='❌';
       delBtn.addEventListener('click',()=>{
         tasks = tasks.filter(t=>t.id!==task.id);
         tasks.forEach((t,i)=>t.order=i);
@@ -217,9 +226,9 @@
   function enterEditMode(li, task){
     li.innerHTML='';
     li.style.flexDirection='column';
-    const titleInput = el('input',{attrs:{type:'text'}}); titleInput.value=task.title;
-    const dateInput = el('input',{attrs:{type:'date'}}); dateInput.value=task.date||'';
-    const saveBtn = el('button',{className:'primary-btn', attrs:{type:'button'}}); saveBtn.textContent='Сохранить';
+    const titleInput = makeElement('input',{attrs:{type:'text'}}); titleInput.value=task.title;
+    const dateInput = makeElement('input',{attrs:{type:'date'}}); dateInput.value=task.date||'';
+    const saveBtn = makeElement('button',{className:'primary-btn', attrs:{type:'button'}}); saveBtn.textContent='Сохранить';
     saveBtn.addEventListener('click',()=>{
       const todayStr = formatDateInputValue(new Date());
       if(!dateInput.value){
