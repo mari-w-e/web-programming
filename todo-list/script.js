@@ -146,6 +146,10 @@
       flex-wrap:wrap;
       margin-bottom:12px;
       align-items:center;
+      width: calc(100% + 32px); /* компенсируем padding карточки */
+      margin-left: -16px;
+      margin-right: -16px;
+      padding: 0 16px; /* чтобы визуально совпадало с краями */
     }
     select.filter-select, button.sort-btn, input.search-input {
       padding:8px 10px;
@@ -158,8 +162,12 @@
       flex-direction:column;
       gap:8px;
       min-height:60px;
-      width: 100%;
+      // width: 100%;
       box-sizing: border-box;
+      width: calc(100% + 32px); /* компенсируем padding карточки */
+      margin-left: -16px;
+      margin-right: -16px;
+      padding: 0 16px; /* чтобы визуально совпадало с краями */
     }
     .task-item {
       display:flex;
