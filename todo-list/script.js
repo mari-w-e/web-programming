@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const STORAGE_KEY = 'todo_v1';
+(function () {
+  const STORAGE_KEY = 'todo_app_tasks_v1';
 
   function el(tag, props = {}) {
     const elem = document.createElement(tag);
@@ -51,8 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return 't_' + Math.random().toString(36).slice(2, 9);
   }
 
+
   const main = el('main', { className: 'app-root' });
   const titleH1 = el('h1', { className: 'app-title', text: 'TODO list' });
+
 
   const createCard = el('section', { className: 'todo-card' });
   const form = el('form', { className: 'todo-form', attrs: { action: '#', 'aria-label':'Добавить задачу' } });
@@ -68,13 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
   form.append(fieldRow, addBtn);
   createCard.appendChild(form);
 
+
   const tasksCard = el('section', { className: 'tasks-card' });
 
   const controls = el('div', { className: 'controls' });
   const filterSelect = el('select', { className: 'filter-select' });
   filterSelect.innerHTML = '<option value="all">Все</option><option value="active">Активные</option><option value="done">Выполненные</option>';
-  const sortBtn = el('button', { className:'sort-btn', attrs:{type:'button'} }); 
-  sortBtn.textContent='Сортировать по дате ↑';
+  const sortBtn = el('button', { className:'sort-btn', attrs:{type:'button'} }); sortBtn.textContent='Сортировать по дате ↑';
   const searchInput = el('input', { className:'search-input', attrs:{type:'search', placeholder:'Поиск по названию'} });
 
   controls.append(filterSelect, sortBtn, searchInput);
@@ -87,8 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
   main.append(titleH1, createCard, tasksCard);
   document.body.appendChild(main);
 
+
   let tasks = loadTasks();
+
   tasks = tasks.map((t,i)=>({order: typeof t.order === 'number' ? t.order : i, ...t}));
+
 
   let sortOrder = 'asc';
   let currentFilter = 'all';
@@ -97,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderTasks() {
     while(tasksList.firstChild) tasksList.removeChild(tasksList.firstChild);
 
+
     let filtered = tasks.slice().sort((a,b)=>a.order-b.order)
       .filter(t=>{
         if(currentFilter==='active' && t.completed) return false;
@@ -104,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(currentSearch && !t.title.toLowerCase().includes(currentSearch.toLowerCase())) return false;
         return true;
       });
+
 
     if(sortOrder==='asc') {
       filtered.sort((a,b)=>{
@@ -128,15 +135,18 @@ document.addEventListener('DOMContentLoaded', () => {
     filtered.forEach(task=>{
       const li = el('li', {className:'task-item', attrs:{draggable:'true'}});
 
+
       li.addEventListener('dragstart', e => {
         dragTaskId = task.id;
         e.dataTransfer.effectAllowed = 'move';
-        try { e.dataTransfer.setData('text/plain', dragTaskId); } catch {}
+
+        try { e.dataTransfer.setData('text/plain', dragTaskId); } catch (err) {}
         li.style.opacity = '0.4';
       });
 
       li.addEventListener('dragend', () => {
         li.style.opacity = '';
+
         document.querySelectorAll('.task-item.drag-over').forEach(x=>x.classList.remove('drag-over'));
       });
 
@@ -146,21 +156,29 @@ document.addEventListener('DOMContentLoaded', () => {
         li.classList.add('drag-over');
       });
 
-      li.addEventListener('dragleave', () => li.classList.remove('drag-over'));
+      li.addEventListener('dragleave', () => {
+        li.classList.remove('drag-over');
+      });
 
       li.addEventListener('drop', e => {
         e.preventDefault();
         e.stopPropagation();
         li.classList.remove('drag-over');
-        if(!dragTaskId || dragTaskId===task.id) return;
-        const srcIndex = tasks.findIndex(t => t.id===dragTaskId);
-        let dstIndex = tasks.findIndex(t => t.id===task.id);
-        if(srcIndex===-1 || dstIndex===-1) return;
+
+        if(!dragTaskId) return;
+        if(dragTaskId === task.id) return;
+
+        const srcIndex = tasks.findIndex(t => t.id === dragTaskId);
+        let dstIndex = tasks.findIndex(t => t.id === task.id);
+        if(srcIndex === -1 || dstIndex === -1) return;
+
         const [dragTask] = tasks.splice(srcIndex, 1);
-        if(srcIndex<dstIndex) dstIndex--;
+        if (srcIndex < dstIndex) dstIndex = dstIndex - 1;
         tasks.splice(dstIndex, 0, dragTask);
+
         sortOrder = 'custom';
         sortBtn.textContent = 'Сортировать по дате ↑';
+
         tasks.forEach((t,i)=>t.order=i);
         saveTasks(tasks);
         renderTasks();
@@ -199,25 +217,25 @@ document.addEventListener('DOMContentLoaded', () => {
   function enterEditMode(li, task){
     li.innerHTML='';
     li.style.flexDirection='column';
-    const titleInput = el('input',{attrs:{type:'text'}});
-    titleInput.value = task.title;
-    const dateInput = el('input',{attrs:{type:'date'}});
-    dateInput.value = task.date||'';
-    const saveBtn = el('button',{className:'primary-btn', attrs:{type:'button'}});
-    saveBtn.textContent='Сохранить';
-    saveBtn.addEventListener('click', ()=>{
+    const titleInput = el('input',{attrs:{type:'text'}}); titleInput.value=task.title;
+    const dateInput = el('input',{attrs:{type:'date'}}); dateInput.value=task.date||'';
+    const saveBtn = el('button',{className:'primary-btn', attrs:{type:'button'}}); saveBtn.textContent='Сохранить';
+    saveBtn.addEventListener('click',()=>{
       const todayStr = formatDateInputValue(new Date());
-      if(!dateInput.value){ alert('Дата обязательна'); dateInput.focus(); return; }
-      if(dateInput.value<todayStr){ alert('Введите актуальную дату'); dateInput.focus(); return; }
+      if(!dateInput.value){
+        alert('Дата обязательна'); dateInput.focus(); return;
+      }
+      if(dateInput.value<todayStr){
+        alert('Введите актуальную дату'); dateInput.focus(); return;
+      }
       task.title = titleInput.value||'(Без названия)';
       task.date = dateInput.value;
-      saveTasks(tasks);
-      renderTasks();
+      saveTasks(tasks); renderTasks();
     });
     li.append(titleInput,dateInput,saveBtn);
   }
 
-  form.addEventListener('submit', (e)=>{
+  form.addEventListener('submit',(e)=>{
     e.preventDefault();
     const titleVal = inputTitle.value.trim();
     const dateVal = formatDateInputValue(inputDate.value);
@@ -225,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(!titleVal){ alert('Введите название задачи'); inputTitle.focus(); return; }
     if(!dateVal){ alert('Введите дату'); inputDate.focus(); return; }
     if(dateVal<todayStr){ alert('Введите актуальную дату'); inputDate.focus(); return; }
+
     const newTask={id:generateId(), title:titleVal, date:dateVal, completed:false, order:tasks.length};
     tasks.push(newTask);
     saveTasks(tasks);
@@ -232,14 +251,18 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTasks();
   });
 
-  filterSelect.addEventListener('change', ()=>{ currentFilter=filterSelect.value; renderTasks(); });
-  searchInput.addEventListener('input', ()=>{ currentSearch=searchInput.value; renderTasks(); });
-  sortBtn.addEventListener('click', ()=>{
-    if(sortOrder==='custom') sortOrder='asc';
-    else sortOrder = sortOrder==='asc' ? 'desc' : 'asc';
+  filterSelect.addEventListener('change',()=>{currentFilter=filterSelect.value; renderTasks();});
+  searchInput.addEventListener('input',()=>{currentSearch=searchInput.value; renderTasks();});
+  sortBtn.addEventListener('click',()=>{
+
+    if(sortOrder === 'custom') {
+      sortOrder = 'asc';
+    } else {
+      sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    }
     sortBtn.textContent = sortOrder==='asc' ? 'Сортировать по дате ↑' : (sortOrder==='desc' ? 'Сортировать по дате ↓' : 'Пользовательский порядок');
     renderTasks();
   });
 
   renderTasks();
-});
+})();
