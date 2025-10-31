@@ -18,17 +18,6 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
   }
 
-  /*function loadTasks() {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
-      return [];
-    } catch {
-      return [];
-    }
-  }*/
 
   function loadTasks() {
     try {
@@ -56,9 +45,9 @@
     return d.toLocaleDateString('ru-RU');
   }
 
-  function generateId() {
-    return 't_' + Math.random().toString(36).slice(2, 9);
-  }
+function generateId() {
+  return Date.now().toString();
+}
 
 
   const main = makeElement('main', { className: 'app-root' });
