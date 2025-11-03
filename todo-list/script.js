@@ -72,7 +72,12 @@ const tasksCard = makeElement('section', { className: 'tasks-card' });
 
 const controls = makeElement('div', { className: 'controls' });
 const filterSelect = makeElement('select', { className: 'filter-select' });
-filterSelect.innerHTML = '<option value="all">Все</option><option value="active">Активные</option><option value="done">Выполненные</option>';
+
+const optionAll = makeElement('option', { attrs: { value: 'all' }, text: 'Все' });
+const optionActive = makeElement('option', { attrs: { value: 'active' }, text: 'Активные' });
+const optionDone = makeElement('option', { attrs: { value: 'done' }, text: 'Выполненные' });
+filterSelect.append(optionAll, optionActive, optionDone);
+
 const sortBtn = makeElement('button', { className:'sort-btn', attrs:{type:'button'} }); sortBtn.textContent='Сортировать по дате ↑';
 const searchInput = makeElement('input', { className:'search-input', attrs:{type:'search', placeholder:'Поиск по названию'} });
 
@@ -211,26 +216,44 @@ function renderTasks() {
   });
 }
 
-function enterEditMode(li, task){
-  li.innerHTML='';
-  li.style.flexDirection='column';
-  const titleInput = makeElement('input',{attrs:{type:'text'}}); titleInput.value=task.title;
-  const dateInput = makeElement('input',{attrs:{type:'date'}}); dateInput.value=task.date||'';
-  const saveBtn = makeElement('button',{className:'primary-btn', attrs:{type:'button'}}); saveBtn.textContent='Сохранить';
-  saveBtn.addEventListener('click',()=>{
+function enterEditMode(li, task) {
+  while (li.firstChild) li.removeChild(li.firstChild);
+
+  li.style.flexDirection = 'column';
+
+  const titleInput = makeElement('input', { attrs: { type: 'text' } });
+  titleInput.value = task.title;
+
+  const dateInput = makeElement('input', { attrs: { type: 'date' } });
+  dateInput.value = task.date || '';
+
+  const saveBtn = makeElement('button', { className: 'primary-btn', attrs: { type: 'button' } });
+  saveBtn.textContent = 'Сохранить';
+  saveBtn.addEventListener('click', () => {
     const todayStr = formatDateInputValue(new Date());
-    if(!dateInput.value){
-      alert('Дата обязательна'); dateInput.focus(); return;
+
+    if (!dateInput.value) {
+      alert('Дата обязательна');
+      dateInput.focus();
+      return;
     }
-    if(dateInput.value<todayStr){
-      alert('Введите актуальную дату'); dateInput.focus(); return;
+
+    if (dateInput.value < todayStr) {
+      alert('Введите актуальную дату');
+      dateInput.focus();
+      return;
     }
-    task.title = titleInput.value||'(Без названия)';
+
+    task.title = titleInput.value || '(Без названия)';
     task.date = dateInput.value;
-    saveTasks(tasks); renderTasks();
+
+    saveTasks(tasks);
+    renderTasks();
   });
-  li.append(titleInput,dateInput,saveBtn);
+
+  li.append(titleInput, dateInput, saveBtn);
 }
+
 
 form.addEventListener('submit',(e)=>{
   e.preventDefault();
