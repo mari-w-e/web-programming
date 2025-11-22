@@ -1,0 +1,129 @@
+:root{
+  --bg:#f6f9fc;
+  --board-bg:#d0e7f7;
+  --cell-bg:#e6f3fb;
+  --tile-font: 'Verdana', sans-serif;
+  --tile-size: calc((min(460px, 90vw) - 40px) / 4);
+  --gap: 10px;
+}
+
+*{box-sizing:border-box}
+html,body,#board-container{height:100%}
+body{
+  margin:0;
+  font-family: Inter, Arial, sans-serif;
+  background: linear-gradient(180deg,#f0f6fb,#e9f3fb);
+  color:#0b1b2b;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:18px;
+  min-height:100vh;
+}
+
+
+.app{width:100%;max-width:700px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.title{margin:0;font-size:28px;color:#0b3a60}
+.score-panel{display:flex;gap:12px;align-items:center}
+.score-box{background:linear-gradient(#bfe0ff,#9fd6ff);padding:8px 12px;border-radius:8px;text-align:center}
+.score-box .label{font-size:12px;color:#01355a}
+#score{font-weight:700;font-size:20px}
+.controls button{margin-left:6px;padding:8px 10px;border-radius:6px;border:0;background:#e6f3fb;cursor:pointer}
+.controls button:hover{filter:brightness(.95)}
+
+
+.game-area{display:flex;flex-direction:column;align-items:center}
+#board-container{
+  position:relative;
+  width: calc(var(--tile-size) * 4 + var(--gap) * 3);
+  height: calc(var(--tile-size) * 4 + var(--gap) * 3);
+  background: var(--board-bg);
+  border-radius:12px;
+  padding:10px;
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: var(--gap);
+  box-shadow: 0 6px 18px rgba(5,30,60,0.12);
+  touch-action: none;
+}
+
+
+.cell{
+  background:var(--cell-bg);
+  border-radius:8px;
+  position:relative;
+}
+
+
+.tile{
+  position:absolute;
+  width: var(--tile-size);
+  height: var(--tile-size);
+  border-radius:8px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family: var(--tile-font);
+  font-weight:700;
+  font-size: calc(var(--tile-size) / 4.5);
+  transition: transform 180ms ease, left 180ms ease, top 180ms ease;
+  will-change: transform, left, top;
+  box-shadow: 0 4px 8px rgba(10,30,60,0.12);
+}
+
+
+.tile-appear{ animation: pop 160ms ease; }
+@keyframes pop{ from{ transform: scale(.2) } to { transform: scale(1) } }
+
+
+.tile-light{ color:#0a1b2a }
+.tile-dark{ color:#fff }
+
+
+.mobile-controls{margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.mc-row{display:flex;gap:8px}
+.mc-btn{
+  width:56px;height:56px;border-radius:12px;border:0;background:linear-gradient(#d7eefb,#bfe8ff);font-size:20px;
+  box-shadow:0 6px 12px rgba(6,35,70,0.12);cursor:pointer
+}
+.hidden{display:none}
+
+
+.modal{
+  position:fixed;inset:0;background:rgba(5,20,40,0.35);display:flex;justify-content:center;align-items:center;padding:24px;z-index:50;
+}
+.modal-content{background:#fff;padding:18px;border-radius:10px;max-width:420px;width:100%;}
+.modal-content h2{margin-top:0}
+.name-row{display:flex;gap:8px;align-items:center;margin:8px 0}
+.name-row input{flex:1;padding:8px;border-radius:6px;border:1px solid #d6eaf6}
+.saved-msg{color:green;font-weight:700;margin:8px 0}
+
+
+.leader-table{width:100%;border-collapse:collapse}
+.leader-table th, .leader-table td{padding:8px;border-bottom:1px solid #eef6fb;text-align:left;font-size:14px}
+
+
+.footer{margin-top:12px;text-align:center;color:#0b2b44;font-size:13px}
+
+@media (max-width:600px){
+  :root{ --tile-size: calc((min(360px, 92vw) - 40px) / 4) }
+  .controls{display:none}
+  .mobile-controls{display:flex}
+  #board-container{width:calc(var(--tile-size)*4 + var(--gap)*3);height:calc(var(--tile-size)*4 + var(--gap)*3)}
+}
+
+.v2{ background: #e7f8ff; }   
+.v4{ background: #d5f0ff; }
+.v8{ background: #bfe8ff; }
+.v16{ background: #9fd6ff; }
+.v32{ background: #7cc8ff; color: #fff }
+.v64{ background: #5bb6ff; color: #fff }
+.v128{ background: #3aa0e6; color: #fff; font-size:calc(var(--tile-size)/5) }
+.v256{ background: #2b86d1; color: #fff; font-size:calc(var(--tile-size)/5.5) }
+.v512{ background: #20679f; color: #fff; font-size:calc(var(--tile-size)/5.8) }
+.v1024{ background: #164f7a; color: #fff; font-size:calc(var(--tile-size)/6.2) }
+.v2048{ background: #0f3454; color: #fff; font-size:calc(var(--tile-size)/6.6) }
+
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
