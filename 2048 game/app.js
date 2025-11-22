@@ -139,6 +139,7 @@ function newGame(clearStorage = false){
   redrawGrid();
   updateScore();
   hideModal(modalGameOver);
+  hideModal(modalLeader); // Добавляем скрытие лидерборда при новой игре
   saveState();
   showMobileControlsIfNeeded();
   if (clearStorage) localStorage.removeItem('leaderboard');
@@ -289,7 +290,6 @@ function addToLeaderboard(name, scoreVal){
   saveLeaderboard(top);
 }
 
-// renderLeaderboard now ONLY fills table, doesn't show modal
 function renderLeaderboard(){
   const list = loadLeaderboard();
   while (leaderTableBody.firstChild) leaderTableBody.removeChild(leaderTableBody.firstChild);
@@ -379,8 +379,8 @@ saveScoreBtn.addEventListener('click', ()=>{
   savedMsg.classList.remove('hidden');
   nameRow.classList.add('hidden');
   saveState();
-  renderLeaderboard();
-  showModal(modalLeader); // optional: show leaderboard after save
+  // Не показываем лидерборд автоматически после сохранения
+  // showModal(modalLeader); // закомментировали эту строку
 });
 
 // modal buttons
@@ -401,7 +401,6 @@ leaderClear.addEventListener('click', ()=>{
   if (confirm('Очистить таблицу лидеров?')) {
     localStorage.removeItem('leaderboard');
     renderLeaderboard();
-    // keep modal open state as-is; do not auto-show
   }
 });
 
@@ -460,9 +459,8 @@ function hideMobileControls(){ mobileControls.classList.add('hidden'); }
 
 // --- INIT ---
 createGridDOM();
-hideModal(modalLeader); // ensure leader modal hidden before any resume logic
+// Убираем вызов hideModal(modalLeader) из инициализации, так как он уже скрыт в HTML
 const resumed = tryResume();
 if (!resumed) newGame();
-// (do not call renderLeaderboard() here)
 updateScore();
 showMobileControlsIfNeeded();
