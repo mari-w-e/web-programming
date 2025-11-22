@@ -22,9 +22,14 @@ const leaderClear = document.getElementById('leader-clear');
 const leaderTableBody = document.querySelector('#leader-table tbody');
 const mobileControls = document.getElementById('mobile-controls');
 
+// Safety: if some element missing, log and stop early
+if (!boardContainer || !scoreEl) {
+  console.error('Critical DOM elements not found. Check HTML IDs.');
+}
+
 let grid = createEmptyGrid();
 let score = 0;
-let prevState = null; 
+let prevState = null;
 let canUndo = false;
 let gameOver = false;
 
@@ -36,7 +41,7 @@ function createEmptyGrid(){
 }
 
 function createGridDOM(){
-  boardContainer.innerHTML = ''; 
+  // remove children safely
   while (boardContainer.firstChild) boardContainer.removeChild(boardContainer.firstChild);
 
   for (let r=0;r<SIZE;r++){
@@ -52,11 +57,7 @@ function createGridDOM(){
 }
 
 function updateMetrics(){
-
   const rect = boardContainer.getBoundingClientRect();
-
-  const computed = getComputedStyle(document.documentElement).getPropertyValue('--tile-size').trim();
-
   cellSize = Math.floor(rect.width / SIZE) - Math.floor(gap * (SIZE-1) / SIZE);
 }
 
@@ -80,7 +81,6 @@ function createTile(value, r, c, extraClass){
 }
 
 function placeTileElement(el, r, c){
-
   const rect = boardContainer.getBoundingClientRect();
   const gapVal = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--gap')) || gap;
   const total = rect.width;
@@ -94,8 +94,7 @@ function placeTileElement(el, r, c){
   el.style.fontSize = `${Math.max(12, Math.floor(tileSize/4.5))}px`;
 }
 
-function redrawGrid(previousPositions = null){
-
+function redrawGrid(){
   const existingTiles = Array.from(boardContainer.querySelectorAll('.tile'));
   existingTiles.forEach(t => boardContainer.removeChild(t));
 
@@ -115,10 +114,9 @@ function getEmptyCells(){
   return empty;
 }
 
-
 function spawnTiles(){
   const empties = getEmptyCells();
-
+  if (empties.length === 0) return;
   const count = Math.min(empties.length, (Math.random() < 0.2 && empties.length>1) ? 2 : 1);
   for (let i=0;i<count;i++){
     const idx = Math.floor(Math.random()*empties.length);
@@ -128,7 +126,6 @@ function spawnTiles(){
   }
 }
 
-
 function newGame(clearStorage = false){
   grid = createEmptyGrid();
   score = 0;
@@ -137,7 +134,7 @@ function newGame(clearStorage = false){
   gameOver = false;
   createGridDOM();
 
-  const initialCount = Math.floor(Math.random()*3) + 1; // 1..3
+  const initialCount = Math.floor(Math.random()*3) + 1;
   for (let i=0;i<initialCount;i++) spawnTiles();
   redrawGrid();
   updateScore();
@@ -147,19 +144,11 @@ function newGame(clearStorage = false){
   if (clearStorage) localStorage.removeItem('leaderboard');
 }
 
-
 function copyGrid(g){ return g.map(row => row.slice()); }
-function gridsEqual(a,b){
-  for (let r=0;r<SIZE;r++) for (let c=0;c<SIZE;c++) if (a[r][c] !== b[r][c]) return false;
-  return true;
-}
-
 
 function compressAndMerge(arr){
-
   let changed = false;
   let mergedScore = 0;
-
   let newArr = arr.filter(v => v !== 0);
 
   for (let i=0;i<newArr.length-1;i++){
@@ -167,14 +156,12 @@ function compressAndMerge(arr){
       newArr[i] = newArr[i] * 2;
       mergedScore += newArr[i];
       newArr.splice(i+1,1);
-      newArr.push(0); 
-
-      i++; 
+      newArr.push(0);
+      i++;
     }
   }
   const result = newArr.filter(v=>v!==0);
   while (result.length < SIZE) result.push(0);
-
   for (let i=0;i<SIZE;i++) if (result[i] !== arr[i]) { changed = true; break; }
   return {arr: result, changed, mergedScore};
 }
@@ -197,7 +184,6 @@ function move(direction){
       if (!moved && changed) moved = true;
     }
   } else {
-
     for (let c=0;c<SIZE;c++){
       const col = [];
       for (let r=0;r<SIZE;r++) col.push(grid[r][c]);
@@ -211,16 +197,13 @@ function move(direction){
   }
 
   if (moved){
-
     prevState = {grid: prevGrid, score: prevScore};
     canUndo = true;
     score += totalMerged;
-
     spawnTiles();
     redrawGrid();
     updateScore();
     saveState();
-
     if (isGameOver()){
       endGame();
     }
@@ -230,11 +213,8 @@ function move(direction){
   }
 }
 
-
 function isGameOver(){
-
   for (let r=0;r<SIZE;r++) for (let c=0;c<SIZE;c++) if (grid[r][c]===0) return false;
-
   for (let r=0;r<SIZE;r++){
     for (let c=0;c<SIZE;c++){
       const v = grid[r][c];
@@ -271,23 +251,22 @@ function endGame(){
   savedMsg.classList.add('hidden');
   playerNameInput.value = '';
   showModal(modalGameOver);
-
   canUndo = false;
   prevState = null;
   hideMobileControls();
-
-  saveState(); 
+  saveState();
 }
 
 function showModal(modal){
+  if (!modal) return;
   modal.classList.remove('hidden');
   modal.setAttribute('aria-hidden','false');
 }
 function hideModal(modal){
+  if (!modal) return;
   modal.classList.add('hidden');
   modal.setAttribute('aria-hidden','true');
 }
-
 
 function loadLeaderboard(){
   const raw = localStorage.getItem('leaderboard');
@@ -295,7 +274,7 @@ function loadLeaderboard(){
   try {
     const arr = JSON.parse(raw);
     if (Array.isArray(arr)) return arr;
-  } catch(e){ /* ignore */ }
+  } catch(e){ console.warn('leaderboard parse error', e); }
   return [];
 }
 function saveLeaderboard(list){
@@ -305,17 +284,14 @@ function addToLeaderboard(name, scoreVal){
   const list = loadLeaderboard();
   const entry = {name: name || 'Без имени', score: scoreVal, date: new Date().toISOString()};
   list.push(entry);
-  // sort desc
   list.sort((a,b)=> b.score - a.score);
-  // keep top10
   const top = list.slice(0,10);
   saveLeaderboard(top);
 }
 
-
+// renderLeaderboard now ONLY fills table, doesn't show modal
 function renderLeaderboard(){
   const list = loadLeaderboard();
-
   while (leaderTableBody.firstChild) leaderTableBody.removeChild(leaderTableBody.firstChild);
   for (let i=0;i<10;i++){
     const tr = document.createElement('tr');
@@ -339,11 +315,9 @@ function renderLeaderboard(){
     tr.appendChild(tdDate);
     leaderTableBody.appendChild(tr);
   }
-  showModal(modalLeader);
-  hideMobileControls(); 
 }
 
-
+// save/load game state
 function saveState(){
   const state = {grid, score};
   try {
@@ -364,7 +338,6 @@ function loadState(){
   return false;
 }
 
-
 function tryResume(){
   const ok = loadState();
   if (ok){
@@ -378,7 +351,7 @@ function tryResume(){
   }
 }
 
-
+// keyboard controls
 document.addEventListener('keydown', (e)=>{
   if (modalLeader.classList.contains('hidden') && modalGameOver.classList.contains('hidden')){
     if (e.key === 'ArrowLeft') { if (move('left')) e.preventDefault(); }
@@ -386,31 +359,35 @@ document.addEventListener('keydown', (e)=>{
     if (e.key === 'ArrowUp') { if (move('up')) e.preventDefault(); }
     if (e.key === 'ArrowDown') { if (move('down')) e.preventDefault(); }
   }
-
 });
 
-btnUndo.addEventListener('click', ()=> {
-  undo();
-});
-btnRestart.addEventListener('click', ()=> {
-  newGame();
-});
+// UI handlers
+btnUndo.addEventListener('click', ()=> { undo(); });
+btnRestart.addEventListener('click', ()=> { newGame(); });
+
+// Show leaderboard ONLY on button click
 btnLeader.addEventListener('click', ()=>{
   renderLeaderboard();
+  showModal(modalLeader);
+  hideMobileControls();
 });
 
-
+// Save score: render table and show leaderboard after saving
 saveScoreBtn.addEventListener('click', ()=>{
   const name = playerNameInput.value.trim() || 'Без имени';
   addToLeaderboard(name, score);
   savedMsg.classList.remove('hidden');
   nameRow.classList.add('hidden');
-  saveState(); 
-  renderLeaderboard(); 
+  saveState();
+  renderLeaderboard();
+  showModal(modalLeader); // optional: show leaderboard after save
 });
+
+// modal buttons
 modalRestart.addEventListener('click', ()=> {
   newGame();
   hideModal(modalGameOver);
+  showMobileControlsIfNeeded();
 });
 modalClose.addEventListener('click', ()=> {
   hideModal(modalGameOver);
@@ -424,10 +401,11 @@ leaderClear.addEventListener('click', ()=>{
   if (confirm('Очистить таблицу лидеров?')) {
     localStorage.removeItem('leaderboard');
     renderLeaderboard();
+    // keep modal open state as-is; do not auto-show
   }
 });
 
-
+// mobile controls
 mobileControls.addEventListener('click', (e)=>{
   const btn = e.target.closest('button');
   if (!btn) return;
@@ -435,6 +413,7 @@ mobileControls.addEventListener('click', (e)=>{
   if (dir) move(dir);
 });
 
+// touch (swipe)
 let touchStartX = 0, touchStartY = 0;
 boardContainer.addEventListener('touchstart', (e)=>{
   if (e.touches && e.touches[0]){
@@ -442,7 +421,6 @@ boardContainer.addEventListener('touchstart', (e)=>{
     touchStartY = e.touches[0].clientY;
   }
 }, {passive:true});
-
 boardContainer.addEventListener('touchend', (e)=>{
   if (!touchStartX && !touchStartY) return;
   const touch = e.changedTouches[0];
@@ -459,9 +437,8 @@ boardContainer.addEventListener('touchend', (e)=>{
   touchStartX = 0; touchStartY = 0;
 }, {passive:true});
 
-
+// resize reposition tiles
 window.addEventListener('resize', ()=>{
-
   const tiles = Array.from(boardContainer.querySelectorAll('.tile'));
   tiles.forEach(t => {
     const r = Number(t.dataset.r), c = Number(t.dataset.c);
@@ -469,11 +446,10 @@ window.addEventListener('resize', ()=>{
   });
 });
 
-
+// mobile controls show/hide
 function showMobileControlsIfNeeded(){
   const isSmall = window.matchMedia('(max-width:600px)').matches;
   if (!isSmall) { mobileControls.classList.add('hidden'); return; }
-
   if (!modalLeader.classList.contains('hidden') || !modalGameOver.classList.contains('hidden')) {
     mobileControls.classList.add('hidden');
     return;
@@ -482,13 +458,11 @@ function showMobileControlsIfNeeded(){
 }
 function hideMobileControls(){ mobileControls.classList.add('hidden'); }
 
-
+// --- INIT ---
 createGridDOM();
-hideModal(modalLeader);
+hideModal(modalLeader); // ensure leader modal hidden before any resume logic
 const resumed = tryResume();
 if (!resumed) newGame();
-//renderLeaderboard(); 
-
-
+// (do not call renderLeaderboard() here)
 updateScore();
 showMobileControlsIfNeeded();
