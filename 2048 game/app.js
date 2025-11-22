@@ -486,7 +486,7 @@ function hideMobileControls(){ mobileControls.classList.add('hidden'); }
 createGridDOM();
 const resumed = tryResume();
 if (!resumed) newGame();
-renderLeaderboard(); 
+//renderLeaderboard(); 
 hideModal(modalLeader);
 
 updateScore();
