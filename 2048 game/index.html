@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>2048 — Лабораторная</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <h1 class="title">2048</h1>
+      <div class="score-panel">
+        <div class="score-box">
+          <div class="label">Счёт</div>
+          <div id="score">0</div>
+        </div>
+        <div class="controls">
+          <button id="btn-undo" title="Отмена хода (undo)">↶ Undo</button>
+          <button id="btn-restart" title="Начать заново">⟳ Новая</button>
+          <button id="btn-leader" title="Таблица лидеров">🏆 Лидерборд</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="game-area">
+      <div id="board-container">
+        <!-- Игровое поле (4x4) будет создано скриптом -->
+      </div>
+
+      <!-- Мобильные кнопки (видны только на маленьких экранах, во время игры) -->
+      <div id="mobile-controls" class="mobile-controls hidden">
+        <button data-dir="up" class="mc-btn">↑</button>
+        <div class="mc-row">
+          <button data-dir="left" class="mc-btn">←</button>
+          <button data-dir="right" class="mc-btn">→</button>
+        </div>
+        <button data-dir="down" class="mc-btn">↓</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <small>Студент: Иванов И.И., группа: WEB-2025</small>
+    </footer>
+  </main>
+
+  <!-- Модал: конец игры / ввод имени -->
+  <div id="modal-gameover" class="modal hidden" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <h2 id="modal-title">Игра окончена</h2>
+      <p id="modal-msg">Вы набрали <span id="final-score">0</span> очков.</p>
+      <div id="name-row" class="name-row">
+        <input id="player-name" type="text" placeholder="Введите имя" maxlength="30" />
+        <button id="save-score">Сохранить результат</button>
+      </div>
+      <div id="saved-msg" class="saved-msg hidden">Ваш рекорд сохранён ✅</div>
+      <div class="modal-actions">
+        <button id="modal-restart">Начать заново</button>
+        <button id="modal-close">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модал: лидерборд -->
+  <div id="modal-leader" class="modal hidden" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <h2>Топ-10 лидеров</h2>
+      <table id="leader-table" class="leader-table">
+        <thead>
+          <tr><th>#</th><th>Имя</th><th>Очки</th><th>Дата</th></tr>
+        </thead>
+        <tbody>
+          <!-- Строки добавляются JS -->
+        </tbody>
+      </table>
+      <div class="modal-actions">
+        <button id="leader-close">Закрыть</button>
+        <button id="leader-clear">Очистить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
