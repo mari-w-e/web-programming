@@ -22,7 +22,6 @@ const leaderClear = document.getElementById('leader-clear');
 const leaderTableBody = document.querySelector('#leader-table tbody');
 const mobileControls = document.getElementById('mobile-controls');
 
-// Safety: if some element missing, log and stop early
 if (!boardContainer || !scoreEl) {
   console.error('Critical DOM elements not found. Check HTML IDs.');
 }
@@ -138,8 +137,10 @@ function newGame(clearStorage = false){
   for (let i=0;i<initialCount;i++) spawnTiles();
   redrawGrid();
   updateScore();
+  
   hideModal(modalGameOver);
-  hideModal(modalLeader); // Добавляем скрытие лидерборда при новой игре
+  hideModal(modalLeader);
+  
   saveState();
   showMobileControlsIfNeeded();
   if (clearStorage) localStorage.removeItem('leaderboard');
@@ -457,10 +458,14 @@ function showMobileControlsIfNeeded(){
 }
 function hideMobileControls(){ mobileControls.classList.add('hidden'); }
 
-// --- INIT ---
+
+hideModal(modalGameOver);
+hideModal(modalLeader);
+
 createGridDOM();
-// Убираем вызов hideModal(modalLeader) из инициализации, так как он уже скрыт в HTML
+
 const resumed = tryResume();
 if (!resumed) newGame();
+
 updateScore();
 showMobileControlsIfNeeded();
