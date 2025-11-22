@@ -88,6 +88,7 @@ body{
   width:56px;height:56px;border-radius:12px;border:0;background:linear-gradient(#d7eefb,#bfe8ff);font-size:20px;
   box-shadow:0 6px 12px rgba(6,35,70,0.12);cursor:pointer
 }
+
 .hidden{display:none}
 
 
