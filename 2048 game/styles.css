@@ -45,7 +45,7 @@ body{
   grid-template-rows: repeat(4, 1fr);
   
   gap: 0;
-  padding: 0;
+  padding: 2px;
   box-sizing: content-box;
 
   border: none;
@@ -54,7 +54,7 @@ body{
 #board-container::before {
   content: "";
   position: absolute;
-  inset: -2 mm;
+  inset: -2px;
   border: 2px solid #000; 
   pointer-events: none;
 }
