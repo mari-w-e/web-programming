@@ -318,7 +318,6 @@ function renderLeaderboard(){
   }
 }
 
-// save/load game state
 function saveState(){
   const state = {grid, score};
   try {
@@ -352,7 +351,6 @@ function tryResume(){
   }
 }
 
-// keyboard controls
 document.addEventListener('keydown', (e)=>{
   if (modalLeader.classList.contains('hidden') && modalGameOver.classList.contains('hidden')){
     if (e.key === 'ArrowLeft') { if (move('left')) e.preventDefault(); }
@@ -362,29 +360,23 @@ document.addEventListener('keydown', (e)=>{
   }
 });
 
-// UI handlers
 btnUndo.addEventListener('click', ()=> { undo(); });
 btnRestart.addEventListener('click', ()=> { newGame(); });
 
-// Show leaderboard ONLY on button click
 btnLeader.addEventListener('click', ()=>{
   renderLeaderboard();
   showModal(modalLeader);
   hideMobileControls();
 });
 
-// Save score: render table and show leaderboard after saving
 saveScoreBtn.addEventListener('click', ()=>{
   const name = playerNameInput.value.trim() || 'Без имени';
   addToLeaderboard(name, score);
   savedMsg.classList.remove('hidden');
   nameRow.classList.add('hidden');
   saveState();
-  // Не показываем лидерборд автоматически после сохранения
-  // showModal(modalLeader); // закомментировали эту строку
 });
 
-// modal buttons
 modalRestart.addEventListener('click', ()=> {
   newGame();
   hideModal(modalGameOver);
@@ -405,7 +397,6 @@ leaderClear.addEventListener('click', ()=>{
   }
 });
 
-// mobile controls
 mobileControls.addEventListener('click', (e)=>{
   const btn = e.target.closest('button');
   if (!btn) return;
@@ -413,7 +404,6 @@ mobileControls.addEventListener('click', (e)=>{
   if (dir) move(dir);
 });
 
-// touch (swipe)
 let touchStartX = 0, touchStartY = 0;
 boardContainer.addEventListener('touchstart', (e)=>{
   if (e.touches && e.touches[0]){
@@ -437,7 +427,6 @@ boardContainer.addEventListener('touchend', (e)=>{
   touchStartX = 0; touchStartY = 0;
 }, {passive:true});
 
-// resize reposition tiles
 window.addEventListener('resize', ()=>{
   const tiles = Array.from(boardContainer.querySelectorAll('.tile'));
   tiles.forEach(t => {
@@ -446,7 +435,6 @@ window.addEventListener('resize', ()=>{
   });
 });
 
-// mobile controls show/hide
 function showMobileControlsIfNeeded(){
   const isSmall = window.matchMedia('(max-width:600px)').matches;
   if (!isSmall) { mobileControls.classList.add('hidden'); return; }
