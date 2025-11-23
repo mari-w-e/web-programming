@@ -38,17 +38,27 @@ body{
   position:relative;
   width: calc(var(--tile-size) * 4 + var(--gap) * 3);
   height: calc(var(--tile-size) * 4 + var(--gap) * 3);
-  background: transparent; 
-  border-radius:0;
+  background: transparent;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  
+  /* border-radius:0;
   padding:0;
   display:block;
   box-shadow: none;
-  touch-action: none;
+  touch-action: none; */
+
+  padding: 0;
+  border: 1px solid #000;
 }
 
 
 .cell{
-  background:transparent !important;
+  /*background:transparent !important;*/
+  border: 1px solid #000;
+  background: transparent;
 }
 
 
