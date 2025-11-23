@@ -54,7 +54,7 @@ body{
 #board-container::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -2 mm;
   border: 2px solid #000; 
   pointer-events: none;
 }
