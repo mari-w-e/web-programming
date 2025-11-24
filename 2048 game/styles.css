@@ -119,7 +119,7 @@ body{
 
 @media (max-width:600px){
   :root{ --tile-size: calc((min(360px, 92vw) - 40px) / 4) }
-  .controls{display:none}
+  /* .controls{display:none}*/
   .mobile-controls{display:flex}
   #board-container{width:calc(var(--tile-size)*4 + var(--gap)*3);height:calc(var(--tile-size)*4 + var(--gap)*3)}
 }
