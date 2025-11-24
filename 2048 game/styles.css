@@ -120,11 +120,6 @@ body{
   margin: 0 auto;
 }
 
-.arrow-up    { grid-area: 1 / 2; }
-.arrow-left  { grid-area: 2 / 1; }
-.arrow-down  { grid-area: 2 / 2; }
-.arrow-right { grid-area: 2 / 3; }
-
 
 .arrow-up    { grid-area: up; }
 .arrow-left  { grid-area: left; }
@@ -153,7 +148,7 @@ body{
 @media (max-width:600px){
   :root{ --tile-size: calc((min(360px, 92vw) - 40px) / 4) }
   /* .controls{display:none}*/
-  .mobile-controls{display:flex}
+  /*.mobile-controls{display:flex}*/
   #board-container{width:calc(var(--tile-size)*4 + var(--gap)*3);height:calc(var(--tile-size)*4 + var(--gap)*3)}
 }
 
