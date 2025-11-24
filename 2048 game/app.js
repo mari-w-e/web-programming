@@ -404,28 +404,6 @@ mobileControls.addEventListener('click', (e)=>{
   if (dir) move(dir);
 });
 
-let touchStartX = 0, touchStartY = 0;
-boardContainer.addEventListener('touchstart', (e)=>{
-  if (e.touches && e.touches[0]){
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-  }
-}, {passive:true});
-boardContainer.addEventListener('touchend', (e)=>{
-  if (!touchStartX && !touchStartY) return;
-  const touch = e.changedTouches[0];
-  const dx = touch.clientX - touchStartX;
-  const dy = touch.clientY - touchStartY;
-  const absX = Math.abs(dx), absY = Math.abs(dy);
-  if (Math.max(absX, absY) > 30){
-    if (absX > absY){
-      if (dx > 0) move('right'); else move('left');
-    } else {
-      if (dy > 0) move('down'); else move('up');
-    }
-  }
-  touchStartX = 0; touchStartY = 0;
-}, {passive:true});
 
 window.addEventListener('resize', ()=>{
   const tiles = Array.from(boardContainer.querySelectorAll('.tile'));
