@@ -94,11 +94,15 @@ body{
 .mobile-controls {
   margin-top: 18px;
   display: grid;
-  grid-template-columns: repeat(3, 64px);
-  grid-template-rows: repeat(3, 64px);
-  gap: 10px;
+  grid-template-areas: 
+    ". up ."
+    "left down right";
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px;
   justify-content: center;
-  align-items: center;
+  max-width: 200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .mobile-controls .arrow-btn {
@@ -111,6 +115,9 @@ body{
   align-items: center;
   cursor: pointer;
   box-shadow: 0 6px 12px rgba(6,35,70,0.12);
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
 }
 
 .arrow-up    { grid-area: 1 / 2; }
@@ -119,12 +126,10 @@ body{
 .arrow-right { grid-area: 2 / 3; }
 
 
-.mobile-controls .empty {
-  pointer-events: none;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
+.arrow-up    { grid-area: up; }
+.arrow-left  { grid-area: left; }
+.arrow-down  { grid-area: down; }
+.arrow-right { grid-area: right; }
 
 .hidden{display:none !important}
 
