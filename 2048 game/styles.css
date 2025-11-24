@@ -91,11 +91,33 @@ body{
 .tile-dark{ color:#fff }
 
 
-.mobile-controls{margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:8px}
-.mc-row{display:flex;gap:8px}
-.mc-btn{
-  width:56px;height:56px;border-radius:12px;border:0;background:linear-gradient(#d7eefb,#bfe8ff);font-size:20px;
-  box-shadow:0 6px 12px rgba(6,35,70,0.12);cursor:pointer
+.mobile-controls {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 64px);
+  grid-template-rows: repeat(3, 64px);
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.mobile-controls .arrow-btn {
+  background: linear-gradient(#d7eefb,#bfe8ff);
+  border: 2px solid #000;
+  border-radius: 10px;
+  font-size: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(6,35,70,0.12);
+}
+
+.mobile-controls .empty {
+  pointer-events: none;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .hidden{display:none !important}
