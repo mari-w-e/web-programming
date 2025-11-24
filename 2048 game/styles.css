@@ -113,6 +113,12 @@ body{
   box-shadow: 0 6px 12px rgba(6,35,70,0.12);
 }
 
+.arrow-up    { grid-area: 1 / 2; }
+.arrow-left  { grid-area: 2 / 1; }
+.arrow-down  { grid-area: 2 / 2; }
+.arrow-right { grid-area: 2 / 3; }
+
+
 .mobile-controls .empty {
   pointer-events: none;
   background: transparent;
