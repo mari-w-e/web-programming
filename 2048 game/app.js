@@ -147,27 +147,6 @@ function newGame(clearStorage = false){
 
 function copyGrid(g){ return g.map(row => row.slice()); }
 
-/*function compressAndMerge(arr){
-  let changed = false;
-  let mergedScore = 0;
-
-  let newArr = arr.filter(v => v !== 0);
-
-  for (let i=0;i<newArr.length-1;i++){
-    if (newArr[i] === newArr[i+1]){
-      newArr[i] = newArr[i] * 2;
-      mergedScore += newArr[i];
-      newArr.splice(i+1,1);
-      newArr.push(0);
-      i++;
-    }
-  }
-  const result = newArr.filter(v=>v!==0);
-  while (result.length < SIZE) result.push(0);
-  for (let i=0;i<SIZE;i++) if (result[i] !== arr[i]) { changed = true; break; }
-  return {arr: result, changed, mergedScore};
-}*/
-
 function compressAndMerge(arr){
   const original = arr.slice();                
   let newArr = arr.filter(v => v !== 0);       
