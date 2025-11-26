@@ -147,12 +147,12 @@ function newGame(clearStorage = false){
 
 function copyGrid(g){ return g.map(row => row.slice()); }
 
+
 function compressAndMerge(arr){
   const original = arr.slice();                
   let newArr = arr.filter(v => v !== 0);       
   let mergedScore = 0;
   let anyMerged = false;
-
   
   let mergedThisPass = true;
   while (mergedThisPass && newArr.length > 1){
