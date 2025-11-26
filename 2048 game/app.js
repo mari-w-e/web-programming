@@ -40,7 +40,6 @@ function createEmptyGrid(){
 }
 
 function createGridDOM(){
-  // remove children safely
   while (boardContainer.firstChild) boardContainer.removeChild(boardContainer.firstChild);
 
   for (let r=0;r<SIZE;r++){
@@ -148,9 +147,10 @@ function newGame(clearStorage = false){
 
 function copyGrid(g){ return g.map(row => row.slice()); }
 
-function compressAndMerge(arr){
+/*function compressAndMerge(arr){
   let changed = false;
   let mergedScore = 0;
+
   let newArr = arr.filter(v => v !== 0);
 
   for (let i=0;i<newArr.length-1;i++){
@@ -166,7 +166,43 @@ function compressAndMerge(arr){
   while (result.length < SIZE) result.push(0);
   for (let i=0;i<SIZE;i++) if (result[i] !== arr[i]) { changed = true; break; }
   return {arr: result, changed, mergedScore};
+}*/
+
+function compressAndMerge(arr){
+  const original = arr.slice();                
+  let newArr = arr.filter(v => v !== 0);       
+  let mergedScore = 0;
+  let anyMerged = false;
+
+  
+  let mergedThisPass = true;
+  while (mergedThisPass && newArr.length > 1){
+    mergedThisPass = false;
+    for (let i = 0; i < newArr.length - 1; i++){
+     
+      if (newArr[i] !== 0 && newArr[i] === newArr[i+1]){
+        newArr[i] = newArr[i] * 2;
+        mergedScore += newArr[i];
+        newArr.splice(i+1, 1);
+        mergedThisPass = true;
+        anyMerged = true;
+        
+      }
+    }
+  }
+
+ 
+  while (newArr.length < SIZE) newArr.push(0);
+
+ 
+  let changed = false;
+  for (let i = 0; i < SIZE; i++){
+    if (newArr[i] !== original[i]) { changed = true; break; }
+  }
+
+  return { arr: newArr, changed, mergedScore };
 }
+
 
 function move(direction){
   if (gameOver) return false;
