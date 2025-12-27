@@ -8,11 +8,14 @@ const cityInput = document.getElementById("cityInput");
 const cityError = document.getElementById("cityError");
 const addCityBtn = document.getElementById("addCityBtn");
 const refreshBtn = document.getElementById("refreshBtn");
+const suggestionsDiv = document.getElementById("suggestions");
+
+
 
 let cities = JSON.parse(localStorage.getItem("cities")) || [];
 let userLocation = JSON.parse(localStorage.getItem("userLocation"));
 let activeCity = null;
-
+let selectedCity = null;
 
 function save() {
     localStorage.setItem("cities", JSON.stringify(cities));
@@ -41,14 +44,19 @@ function formatDate(offset) {
 
 if (!userLocation) {
     navigator.geolocation.getCurrentPosition(
-        pos => {
-            userLocation = {
-                name: "Текущее местоположение",
-                lat: pos.coords.latitude,
-                lon: pos.coords.longitude
-            };
-            save();
-            setActiveCity(userLocation);
+    pos => {
+        userLocation = {
+            name: "Текущее местоположение",
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude
+        };
+        save();
+        setActiveCity(userLocation);
+    },
+    () => {
+        // если отказали в геолокации
+        addCitySection.classList.remove("collapsed");
+        statusText.textContent = "Введите город вручную";
         }
     );
 }
@@ -146,37 +154,72 @@ function renderWeather(name, data) {
 
 addCityToggle.onclick = () => {
     addCitySection.classList.toggle("collapsed");
+    cityError.textContent = "";
+    suggestionsDiv.innerHTML = "";
 };
 
-addCityBtn.onclick = () => {
-    const name = cityInput.value.trim();
-    if (!name) return;
-
+cityInput.addEventListener("input", () => {
+    const value = cityInput.value.trim();
+    suggestionsDiv.innerHTML = "";
     cityError.textContent = "";
-    statusText.textContent = "Поиск города...";
+    selectedCity = null;
 
-    fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${name}&count=1&language=ru`)
+    if (value.length < 2) return;
+
+    fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${value}&count=5&language=ru`)
         .then(r => r.json())
         .then(data => {
-            if (!data.results) {
-                cityError.textContent = "Город не найден";
-                statusText.textContent = "";
-                return;
-            }
+            if (!data.results) return;
 
-            const city = {
-                name: data.results[0].name,
-                lat: data.results[0].latitude,
-                lon: data.results[0].longitude
-            };
+            data.results.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "suggestion";
+                div.textContent = `${item.name}, ${item.country}`;
 
-            cities.push(city);
-            save();
-            cityInput.value = "";
-            addCitySection.classList.add("collapsed");
-            setActiveCity(city);
+                div.onclick = () => {
+                    cityInput.value = item.name;
+                    selectedCity = {
+                        name: item.name,
+                        lat: item.latitude,
+                        lon: item.longitude
+                    };
+                    suggestionsDiv.innerHTML = "";
+                };
+
+                suggestionsDiv.appendChild(div);
+            });
         });
+});
+
+
+
+addCityBtn.onclick = () => {
+    cityError.textContent = "";
+
+    if (!selectedCity) {
+        cityError.textContent = "Выберите город из списка";
+        return;
+    }
+
+    if (cities.find(c => c.name === selectedCity.name)) {
+        cityError.textContent = "Город уже добавлен";
+        return;
+    }
+
+    cities.push(selectedCity);
+    save();
+
+    cityInput.value = "";
+    selectedCity = null;
+    suggestionsDiv.innerHTML = "";
+    addCitySection.classList.add("collapsed");
+
+    setActiveCity(cities[cities.length - 1]);
 };
+
+
+
+
 
 
 refreshBtn.onclick = () => {
