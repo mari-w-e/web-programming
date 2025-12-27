@@ -8,7 +8,6 @@ body {
     background: #eef2f5;
 }
 
-/* ===== HEADER ===== */
 
 .header {
     display: flex;
@@ -61,11 +60,15 @@ body {
     cursor: pointer;
 }
 
-/* ===== MAIN ===== */
 
 main {
     padding: 20px;
 }
+
+.status {
+    margin-bottom: 10px;
+}
+
 
 .add-city {
     background: white;
@@ -73,6 +76,13 @@ main {
     border-radius: 6px;
     max-width: 400px;
     margin-bottom: 20px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.add-city.collapsed {
+    max-height: 0;
+    padding: 0 15px;
 }
 
 .add-city input {
@@ -80,29 +90,11 @@ main {
     padding: 8px;
 }
 
-.suggestions {
-    background: #f0f0f0;
-}
-
-.suggestion {
-    padding: 6px;
-    cursor: pointer;
-}
-
-.suggestion:hover {
-    background: #ddd;
-}
-
 .error {
     color: red;
     font-size: 14px;
 }
 
-.status {
-    margin-bottom: 10px;
-}
-
-/* ===== WEATHER LAYOUT ===== */
 
 .weather-layout {
     display: flex;
@@ -110,33 +102,20 @@ main {
     flex-wrap: wrap;
 }
 
-/* ===== LEFT BLOCK ===== */
-
-.current-weather {
+.current-weather,
+.forecast-table {
     background: white;
-    padding: 15px;
     border-radius: 8px;
+    padding: 15px;
     width: 100%;
 }
 
-.current-weather h2 {
-    margin-top: 0;
-}
 
 .current-temp {
     font-size: 36px;
     font-weight: bold;
 }
 
-/* ===== TABLE ===== */
-
-.forecast-table {
-    background: white;
-    border-radius: 8px;
-    padding: 15px;
-    width: 100%;
-    overflow-x: auto;
-}
 
 table {
     width: 100%;
@@ -149,7 +128,6 @@ th, td {
     text-align: center;
 }
 
-/* ===== RESPONSIVE ===== */
 
 @media (min-width: 900px) {
     .current-weather {
@@ -159,8 +137,4 @@ th, td {
     .forecast-table {
         width: 65%;
     }
-}
-
-.hidden {
-    display: none;
 }
