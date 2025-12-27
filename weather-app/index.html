@@ -2,31 +2,38 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Прогноз погоды</title>
+    <title>weather-app</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header>
-    <h1>Прогноз погоды</h1>
-    <button id="refreshBtn">Обновить</button>
+<header class="header">
+    <div class="logo">weather-app</div>
+
+    <div class="city-selector">
+        <div id="cityButtons" class="city-buttons">
+           
+        </div>
+        <button id="addCityToggle" class="add-btn">+ Добавить город</button>
+    </div>
+
+    <button id="refreshBtn" class="refresh-btn">Обновить</button>
 </header>
 
 <main>
-    <section id="add-city-section" class="hidden">
-        <h2>Добавить город</h2>
+    <section id="addCitySection" class="add-city hidden">
         <input type="text" id="cityInput" placeholder="Введите город">
-        <div id="suggestions"></div>
-        <p class="error" id="cityError"></p>
+        <div id="suggestions" class="suggestions"></div>
+        <p id="cityError" class="error"></p>
         <button id="addCityBtn">Добавить</button>
     </section>
 
-    <section id="weather-container">
+    <p id="status" class="status"></p>
+
+    <section id="weatherContainer" class="weather-container">
         
     </section>
-
-    <p id="status" class="status"></p>
 </main>
 
 <script src="script.js"></script>
