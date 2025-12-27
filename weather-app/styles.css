@@ -70,26 +70,6 @@ main {
 }
 
 
-.add-city {
-    background: white;
-    padding: 15px;
-    border-radius: 6px;
-    max-width: 400px;
-    margin-bottom: 20px;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-}
-
-.add-city.collapsed {
-    max-height: 0;
-    padding: 0 15px;
-}
-
-.add-city input {
-    width: 100%;
-    padding: 8px;
-}
-
 .error {
     color: red;
     font-size: 14px;
@@ -139,17 +119,52 @@ th, td {
     }
 }
 
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-content h3 {
+    margin-top: 0;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
 .suggestions {
-    background: #f5f5f5;
-    border: 1px solid #ccc;
-    border-top: none;
+    border: 1px solid #ddd;
+    max-height: 150px;
+    overflow-y: auto;
 }
 
 .suggestion {
-    padding: 6px 8px;
+    padding: 6px 10px;
     cursor: pointer;
 }
 
 .suggestion:hover {
-    background: #ddd;
+    background: #eef5ff;
 }
