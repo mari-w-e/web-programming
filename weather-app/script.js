@@ -5,25 +5,11 @@ const statusText = document.getElementById("status");
 const addCityToggle = document.getElementById("addCityToggle");
 const addCitySection = document.getElementById("addCitySection");
 const cityInput = document.getElementById("cityInput");
-const suggestionsDiv = document.getElementById("suggestions");
 const cityError = document.getElementById("cityError");
 const addCityBtn = document.getElementById("addCityBtn");
 const refreshBtn = document.getElementById("refreshBtn");
 
-
-const allCities = [
-    { name: "Москва", lat: 55.75, lon: 37.61 },
-    { name: "Санкт-Петербург", lat: 59.93, lon: 30.31 },
-    { name: "Казань", lat: 55.79, lon: 49.12 },
-    { name: "Новосибирск", lat: 55.03, lon: 82.92 },
-    { name: "Екатеринбург", lat: 56.84, lon: 60.61 }
-];
-
-let cities = JSON.parse(localStorage.getItem("cities")) || [
-    allCities[0],
-    allCities[1]
-];
-
+let cities = JSON.parse(localStorage.getItem("cities")) || [];
 let userLocation = JSON.parse(localStorage.getItem("userLocation"));
 let activeCity = null;
 
@@ -33,8 +19,27 @@ function save() {
     localStorage.setItem("userLocation", JSON.stringify(userLocation));
 }
 
+function weatherCodeToText(code) {
+    if (code === 0) return "Солнечно";
+    if (code <= 2) return "Малооблачно";
+    if (code <= 48) return "Пасмурно";
+    if (code <= 67) return "Дождь";
+    if (code <= 77) return "Снег";
+    return "Осадки";
+}
 
-function requestGeo() {
+function formatDate(offset) {
+    const d = new Date();
+    d.setDate(d.getDate() + offset);
+    const day = d.toLocaleDateString("ru-RU");
+
+    if (offset === 0) return `Сегодня ${day}`;
+    if (offset === 1) return `Завтра ${day}`;
+    return `Послезавтра ${day}`;
+}
+
+
+if (!userLocation) {
     navigator.geolocation.getCurrentPosition(
         pos => {
             userLocation = {
@@ -44,9 +49,6 @@ function requestGeo() {
             };
             save();
             setActiveCity(userLocation);
-        },
-        () => {
-            
         }
     );
 }
@@ -56,14 +58,14 @@ function renderCityButtons() {
     cityButtonsDiv.innerHTML = "";
 
     if (userLocation) createCityButton(userLocation);
-    cities.forEach(city => createCityButton(city));
+    cities.forEach(c => createCityButton(c));
 }
 
 function createCityButton(city) {
     const btn = document.createElement("button");
     btn.textContent = city.name;
 
-    if (activeCity && activeCity.name === city.name) {
+    if (activeCity && city.name === activeCity.name) {
         btn.classList.add("active");
     }
 
@@ -79,38 +81,38 @@ function setActiveCity(city) {
 
 
 function loadWeather(city) {
-    weatherContainer.innerHTML = "";
     statusText.textContent = "Загрузка...";
+    weatherContainer.innerHTML = "";
 
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,windspeed_10m_max&timezone=auto`)
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode,windspeed_10m_max&timezone=auto`)
         .then(r => r.json())
         .then(data => {
             statusText.textContent = "";
             renderWeather(city.name, data);
         })
-        .catch(() => {
-            statusText.textContent = "Ошибка загрузки погоды";
-        });
+        .catch(() => statusText.textContent = "Ошибка загрузки");
 }
 
 function renderWeather(name, data) {
-    const days = data.daily.time;
+    const weatherText = weatherCodeToText(data.current_weather.weathercode);
 
     weatherContainer.innerHTML = `
         <div class="current-weather">
             <h2>${name}</h2>
             <div class="current-temp">${data.current_weather.temperature}°C</div>
+            <p>Максимальная: ${data.daily.temperature_2m_max[0]}°C</p>
+            <p>Минимальная: ${data.daily.temperature_2m_min[0]}°C</p>
+            <p>Состояние: ${weatherText}</p>
             <p>Ветер: ${data.current_weather.windspeed} м/с</p>
-            <p>Макс/Мин: ${data.daily.temperature_2m_max[0]}°C / ${data.daily.temperature_2m_min[0]}°C</p>
         </div>
 
         <div class="forecast-table">
             <table>
                 <tr>
                     <th></th>
-                    <th>${days[0]}</th>
-                    <th>${days[1]}</th>
-                    <th>${days[2]}</th>
+                    <th>${formatDate(0)}</th>
+                    <th>${formatDate(1)}</th>
+                    <th>${formatDate(2)}</th>
                 </tr>
                 <tr>
                     <td>Макс °C</td>
@@ -125,6 +127,12 @@ function renderWeather(name, data) {
                     <td>${data.daily.temperature_2m_min[2]}</td>
                 </tr>
                 <tr>
+                    <td>Состояние</td>
+                    <td>${weatherCodeToText(data.daily.weathercode[0])}</td>
+                    <td>${weatherCodeToText(data.daily.weathercode[1])}</td>
+                    <td>${weatherCodeToText(data.daily.weathercode[2])}</td>
+                </tr>
+                <tr>
                     <td>Ветер</td>
                     <td>${data.daily.windspeed_10m_max[0]} м/с</td>
                     <td>${data.daily.windspeed_10m_max[1]} м/с</td>
@@ -137,51 +145,38 @@ function renderWeather(name, data) {
 
 
 addCityToggle.onclick = () => {
-    addCitySection.classList.toggle("hidden");
+    addCitySection.classList.toggle("collapsed");
 };
-
-cityInput.addEventListener("input", () => {
-    suggestionsDiv.innerHTML = "";
-    cityError.textContent = "";
-
-    const value = cityInput.value.toLowerCase();
-    if (!value) return;
-
-    allCities
-        .filter(c => c.name.toLowerCase().includes(value))
-        .forEach(c => {
-            const div = document.createElement("div");
-            div.className = "suggestion";
-            div.textContent = c.name;
-            div.onclick = () => {
-                cityInput.value = c.name;
-                suggestionsDiv.innerHTML = "";
-            };
-            suggestionsDiv.appendChild(div);
-        });
-});
 
 addCityBtn.onclick = () => {
-    const city = allCities.find(c => c.name === cityInput.value);
+    const name = cityInput.value.trim();
+    if (!name) return;
 
-    if (!city) {
-        cityError.textContent = "Такого города не существует";
-        return;
-    }
+    cityError.textContent = "";
+    statusText.textContent = "Поиск города...";
 
-    if (cities.find(c => c.name === city.name)) {
-        cityError.textContent = "Город уже добавлен";
-        return;
-    }
+    fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${name}&count=1&language=ru`)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.results) {
+                cityError.textContent = "Город не найден";
+                statusText.textContent = "";
+                return;
+            }
 
-    cities.push(city);
-    save();
-    cityInput.value = "";
-    addCitySection.classList.add("hidden");
+            const city = {
+                name: data.results[0].name,
+                lat: data.results[0].latitude,
+                lon: data.results[0].longitude
+            };
 
-    setActiveCity(city); 
+            cities.push(city);
+            save();
+            cityInput.value = "";
+            addCitySection.classList.add("collapsed");
+            setActiveCity(city);
+        });
 };
-
 
 
 refreshBtn.onclick = () => {
@@ -189,11 +184,5 @@ refreshBtn.onclick = () => {
 };
 
 
-
 renderCityButtons();
-
-if (userLocation) {
-    setActiveCity(userLocation);
-} else {
-    requestGeo();
-}
+if (userLocation) setActiveCity(userLocation);
