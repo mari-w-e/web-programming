@@ -10,6 +10,7 @@ const cityError = document.getElementById("cityError");
 const addCityBtn = document.getElementById("addCityBtn");
 const refreshBtn = document.getElementById("refreshBtn");
 
+
 const allCities = [
     { name: "Москва", lat: 55.75, lon: 37.61 },
     { name: "Санкт-Петербург", lat: 59.93, lon: 30.31 },
@@ -26,14 +27,12 @@ let cities = JSON.parse(localStorage.getItem("cities")) || [
 let userLocation = JSON.parse(localStorage.getItem("userLocation"));
 let activeCity = null;
 
-/* ===== STORAGE ===== */
 
 function save() {
     localStorage.setItem("cities", JSON.stringify(cities));
     localStorage.setItem("userLocation", JSON.stringify(userLocation));
 }
 
-/* ===== GEO ===== */
 
 function requestGeo() {
     navigator.geolocation.getCurrentPosition(
@@ -47,7 +46,7 @@ function requestGeo() {
             setActiveCity(userLocation);
         },
         () => {
-            addCitySection.classList.remove("hidden");
+            
         }
     );
 }
@@ -56,19 +55,18 @@ function requestGeo() {
 function renderCityButtons() {
     cityButtonsDiv.innerHTML = "";
 
-    if (userLocation) {
-        createCityButton(userLocation);
-    }
-
+    if (userLocation) createCityButton(userLocation);
     cities.forEach(city => createCityButton(city));
 }
 
 function createCityButton(city) {
     const btn = document.createElement("button");
     btn.textContent = city.name;
+
     if (activeCity && activeCity.name === city.name) {
         btn.classList.add("active");
     }
+
     btn.onclick = () => setActiveCity(city);
     cityButtonsDiv.appendChild(btn);
 }
@@ -84,26 +82,55 @@ function loadWeather(city) {
     weatherContainer.innerHTML = "";
     statusText.textContent = "Загрузка...";
 
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&daily=temperature_2m_max&timezone=auto`)
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,windspeed_10m_max&timezone=auto`)
         .then(r => r.json())
         .then(data => {
             statusText.textContent = "";
-            renderWeather(city.name, data.daily.temperature_2m_max);
+            renderWeather(city.name, data);
         })
         .catch(() => {
-            statusText.textContent = "Ошибка загрузки";
+            statusText.textContent = "Ошибка загрузки погоды";
         });
 }
 
-function renderWeather(name, temps) {
+function renderWeather(name, data) {
+    const days = data.daily.time;
+
     weatherContainer.innerHTML = `
-        <div class="weather-card">
+        <div class="current-weather">
             <h2>${name}</h2>
-            <div class="forecast">
-                <div class="day">Сегодня<br>${temps[0]}°C</div>
-                <div class="day">Завтра<br>${temps[1]}°C</div>
-                <div class="day">Послезавтра<br>${temps[2]}°C</div>
-            </div>
+            <div class="current-temp">${data.current_weather.temperature}°C</div>
+            <p>Ветер: ${data.current_weather.windspeed} м/с</p>
+            <p>Макс/Мин: ${data.daily.temperature_2m_max[0]}°C / ${data.daily.temperature_2m_min[0]}°C</p>
+        </div>
+
+        <div class="forecast-table">
+            <table>
+                <tr>
+                    <th></th>
+                    <th>${days[0]}</th>
+                    <th>${days[1]}</th>
+                    <th>${days[2]}</th>
+                </tr>
+                <tr>
+                    <td>Макс °C</td>
+                    <td>${data.daily.temperature_2m_max[0]}</td>
+                    <td>${data.daily.temperature_2m_max[1]}</td>
+                    <td>${data.daily.temperature_2m_max[2]}</td>
+                </tr>
+                <tr>
+                    <td>Мин °C</td>
+                    <td>${data.daily.temperature_2m_min[0]}</td>
+                    <td>${data.daily.temperature_2m_min[1]}</td>
+                    <td>${data.daily.temperature_2m_min[2]}</td>
+                </tr>
+                <tr>
+                    <td>Ветер</td>
+                    <td>${data.daily.windspeed_10m_max[0]} м/с</td>
+                    <td>${data.daily.windspeed_10m_max[1]} м/с</td>
+                    <td>${data.daily.windspeed_10m_max[2]} м/с</td>
+                </tr>
+            </table>
         </div>
     `;
 }
@@ -149,16 +176,18 @@ addCityBtn.onclick = () => {
 
     cities.push(city);
     save();
-    renderCityButtons();
     cityInput.value = "";
+    addCitySection.classList.add("hidden");
+
+    setActiveCity(city); 
 };
+
 
 
 refreshBtn.onclick = () => {
-    if (activeCity) {
-        loadWeather(activeCity);
-    }
+    if (activeCity) loadWeather(activeCity);
 };
+
 
 
 renderCityButtons();
