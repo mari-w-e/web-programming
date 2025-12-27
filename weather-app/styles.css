@@ -138,3 +138,18 @@ th, td {
         width: 65%;
     }
 }
+
+.suggestions {
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+.suggestion {
+    padding: 6px 8px;
+    cursor: pointer;
+}
+
+.suggestion:hover {
+    background: #ddd;
+}
