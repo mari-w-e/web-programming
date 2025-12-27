@@ -1,14 +1,16 @@
-const weatherContainer = document.getElementById("weather-container");
+const cityButtonsDiv = document.getElementById("cityButtons");
+const weatherContainer = document.getElementById("weatherContainer");
 const statusText = document.getElementById("status");
-const addCitySection = document.getElementById("add-city-section");
+
+const addCityToggle = document.getElementById("addCityToggle");
+const addCitySection = document.getElementById("addCitySection");
 const cityInput = document.getElementById("cityInput");
 const suggestionsDiv = document.getElementById("suggestions");
 const cityError = document.getElementById("cityError");
-
-const refreshBtn = document.getElementById("refreshBtn");
 const addCityBtn = document.getElementById("addCityBtn");
+const refreshBtn = document.getElementById("refreshBtn");
 
-const cities = [
+const allCities = [
     { name: "Москва", lat: 55.75, lon: 37.61 },
     { name: "Санкт-Петербург", lat: 59.93, lon: 30.31 },
     { name: "Казань", lat: 55.79, lon: 49.12 },
@@ -16,32 +18,87 @@ const cities = [
     { name: "Екатеринбург", lat: 56.84, lon: 60.61 }
 ];
 
-let savedCities = JSON.parse(localStorage.getItem("cities")) || [];
-let userLocation = JSON.parse(localStorage.getItem("userLocation"));
+let cities = JSON.parse(localStorage.getItem("cities")) || [
+    allCities[0],
+    allCities[1]
+];
 
-function saveData() {
-    localStorage.setItem("cities", JSON.stringify(savedCities));
+let userLocation = JSON.parse(localStorage.getItem("userLocation"));
+let activeCity = null;
+
+/* ===== STORAGE ===== */
+
+function save() {
+    localStorage.setItem("cities", JSON.stringify(cities));
     localStorage.setItem("userLocation", JSON.stringify(userLocation));
 }
 
-function fetchWeather(lat, lon, title) {
-    statusText.textContent = "Загрузка погоды...";
+/* ===== GEO ===== */
 
-    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max&timezone=auto`)
-        .then(res => res.json())
+function requestGeo() {
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            userLocation = {
+                name: "Текущее местоположение",
+                lat: pos.coords.latitude,
+                lon: pos.coords.longitude
+            };
+            save();
+            setActiveCity(userLocation);
+        },
+        () => {
+            addCitySection.classList.remove("hidden");
+        }
+    );
+}
+
+
+function renderCityButtons() {
+    cityButtonsDiv.innerHTML = "";
+
+    if (userLocation) {
+        createCityButton(userLocation);
+    }
+
+    cities.forEach(city => createCityButton(city));
+}
+
+function createCityButton(city) {
+    const btn = document.createElement("button");
+    btn.textContent = city.name;
+    if (activeCity && activeCity.name === city.name) {
+        btn.classList.add("active");
+    }
+    btn.onclick = () => setActiveCity(city);
+    cityButtonsDiv.appendChild(btn);
+}
+
+function setActiveCity(city) {
+    activeCity = city;
+    renderCityButtons();
+    loadWeather(city);
+}
+
+
+function loadWeather(city) {
+    weatherContainer.innerHTML = "";
+    statusText.textContent = "Загрузка...";
+
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&daily=temperature_2m_max&timezone=auto`)
+        .then(r => r.json())
         .then(data => {
             statusText.textContent = "";
-            renderCard(title, data.daily.temperature_2m_max);
+            renderWeather(city.name, data.daily.temperature_2m_max);
         })
         .catch(() => {
-            statusText.textContent = "Ошибка загрузки погоды";
+            statusText.textContent = "Ошибка загрузки";
         });
 }
 
-function renderCard(title, temps) {
-    let html = `
-        <div class="city-card">
-            <h3>${title}</h3>
+function renderWeather(name, temps) {
+    weatherContainer.innerHTML = `
+        <div class="weather-card">
+            <h2>${name}</h2>
             <div class="forecast">
                 <div class="day">Сегодня<br>${temps[0]}°C</div>
                 <div class="day">Завтра<br>${temps[1]}°C</div>
@@ -49,41 +106,12 @@ function renderCard(title, temps) {
             </div>
         </div>
     `;
-    weatherContainer.innerHTML += html;
 }
 
-function loadAllWeather() {
-    weatherContainer.innerHTML = "";
 
-    if (userLocation) {
-        fetchWeather(userLocation.lat, userLocation.lon, "Текущее местоположение");
-    }
-
-    savedCities.forEach(city => {
-        fetchWeather(city.lat, city.lon, city.name);
-    });
-}
-
-function requestGeo() {
-    if (!navigator.geolocation) {
-        addCitySection.classList.remove("hidden");
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-        pos => {
-            userLocation = {
-                lat: pos.coords.latitude,
-                lon: pos.coords.longitude
-            };
-            saveData();
-            loadAllWeather();
-        },
-        () => {
-            addCitySection.classList.remove("hidden");
-        }
-    );
-}
+addCityToggle.onclick = () => {
+    addCitySection.classList.toggle("hidden");
+};
 
 cityInput.addEventListener("input", () => {
     suggestionsDiv.innerHTML = "";
@@ -92,12 +120,12 @@ cityInput.addEventListener("input", () => {
     const value = cityInput.value.toLowerCase();
     if (!value) return;
 
-    cities
+    allCities
         .filter(c => c.name.toLowerCase().includes(value))
         .forEach(c => {
             const div = document.createElement("div");
-            div.textContent = c.name;
             div.className = "suggestion";
+            div.textContent = c.name;
             div.onclick = () => {
                 cityInput.value = c.name;
                 suggestionsDiv.innerHTML = "";
@@ -106,32 +134,37 @@ cityInput.addEventListener("input", () => {
         });
 });
 
-addCityBtn.addEventListener("click", () => {
-    const cityName = cityInput.value;
-    const city = cities.find(c => c.name === cityName);
+addCityBtn.onclick = () => {
+    const city = allCities.find(c => c.name === cityInput.value);
 
     if (!city) {
-        cityError.textContent = "Такого города нет";
+        cityError.textContent = "Такого города не существует";
         return;
     }
 
-    if (savedCities.find(c => c.name === city.name)) {
+    if (cities.find(c => c.name === city.name)) {
         cityError.textContent = "Город уже добавлен";
         return;
     }
 
-    savedCities.push(city);
-    saveData();
+    cities.push(city);
+    save();
+    renderCityButtons();
     cityInput.value = "";
-    loadAllWeather();
-});
+};
 
-refreshBtn.addEventListener("click", () => {
-    loadAllWeather();
-});
 
-if (userLocation || savedCities.length > 0) {
-    loadAllWeather();
+refreshBtn.onclick = () => {
+    if (activeCity) {
+        loadWeather(activeCity);
+    }
+};
+
+
+renderCityButtons();
+
+if (userLocation) {
+    setActiveCity(userLocation);
 } else {
     requestGeo();
 }
