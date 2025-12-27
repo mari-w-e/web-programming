@@ -20,18 +20,27 @@
 </header>
 
 <main>
-    <section id="addCitySection" class="add-city collapsed">
-        <input type="text" id="cityInput" placeholder="Введите город">
-        <div id="suggestions" class="suggestions"></div>
-        
-        <p id="cityError" class="error"></p>
-        <button id="addCityBtn">Добавить</button>
-    </section>
+    <div id="cityModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Добавить город</h3>
+
+            <input type="text" id="cityInput" placeholder="Введите город">
+            <div id="suggestions" class="suggestions"></div>
+
+            <p id="cityError" class="error"></p>
+
+            <div class="modal-actions">
+                <button id="addCityBtn">Добавить</button>
+                <button id="closeModalBtn">Отмена</button>
+            </div>
+        </div>
+    </div>
 
     <p id="status" class="status"></p>
 
     <section id="weatherContainer" class="weather-layout"></section>
 </main>
+
 
 <script src="script.js"></script>
 </body>
