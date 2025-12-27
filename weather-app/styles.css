@@ -8,6 +8,7 @@ body {
     background: #eef2f5;
 }
 
+/* ===== HEADER ===== */
 
 .header {
     display: flex;
@@ -20,8 +21,8 @@ body {
 }
 
 .logo {
-    font-weight: bold;
     font-size: 20px;
+    font-weight: bold;
 }
 
 .city-selector {
@@ -36,17 +37,18 @@ body {
 }
 
 .city-buttons button {
-    background: white;
-    color: #1e88e5;
-    border: none;
+    background: #1e88e5;
+    color: white;
+    border: 1px solid white;
     padding: 6px 10px;
     border-radius: 4px;
     cursor: pointer;
 }
 
 .city-buttons button.active {
-    background: #1565c0;
-    color: white;
+    background: white;
+    color: #1e88e5;
+    font-weight: bold;
 }
 
 .add-btn,
@@ -59,6 +61,7 @@ body {
     cursor: pointer;
 }
 
+/* ===== MAIN ===== */
 
 main {
     padding: 20px;
@@ -99,37 +102,62 @@ main {
     margin-bottom: 10px;
 }
 
-.weather-container {
+/* ===== WEATHER LAYOUT ===== */
+
+.weather-layout {
     display: flex;
-    flex-wrap: wrap;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
+/* ===== LEFT BLOCK ===== */
 
-.weather-card {
+.current-weather {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.current-weather h2 {
+    margin-top: 0;
+}
+
+.current-temp {
+    font-size: 36px;
+    font-weight: bold;
+}
+
+/* ===== TABLE ===== */
+
+.forecast-table {
     background: white;
     border-radius: 8px;
     padding: 15px;
     width: 100%;
+    overflow-x: auto;
 }
 
-.weather-card h2 {
-    margin-top: 0;
+table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-.forecast {
-    display: flex;
-    justify-content: space-between;
-}
-
-.day {
+th, td {
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
     text-align: center;
 }
 
+/* ===== RESPONSIVE ===== */
 
-@media (min-width: 768px) {
-    .weather-card {
+@media (min-width: 900px) {
+    .current-weather {
         width: 30%;
+    }
+
+    .forecast-table {
+        width: 65%;
     }
 }
 
