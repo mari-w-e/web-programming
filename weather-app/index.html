@@ -12,9 +12,7 @@
     <div class="logo">weather-app</div>
 
     <div class="city-selector">
-        <div id="cityButtons" class="city-buttons">
-           
-        </div>
+        <div id="cityButtons" class="city-buttons"></div>
         <button id="addCityToggle" class="add-btn">+ Добавить город</button>
     </div>
 
@@ -22,6 +20,7 @@
 </header>
 
 <main>
+    <!-- окно добавления города -->
     <section id="addCitySection" class="add-city hidden">
         <input type="text" id="cityInput" placeholder="Введите город">
         <div id="suggestions" class="suggestions"></div>
@@ -31,8 +30,8 @@
 
     <p id="status" class="status"></p>
 
-    <section id="weatherContainer" class="weather-container">
-        
+    <section id="weatherContainer" class="weather-layout">
+        <!-- данные погоды -->
     </section>
 </main>
 
