@@ -91,8 +91,8 @@ function renderWeather(name, data) {
         <div class="current-weather">
             <h2>${name}</h2>
             <div class="current-temp">${data.current_weather.temperature}°C</div>
-            <p>Максимальная t°C: ${data.daily.temperature_2m_max[0]}°C</p>
-            <p>Минимальная t°C: ${data.daily.temperature_2m_min[0]}°C</p>
+            <p>Макс. t°C: ${data.daily.temperature_2m_max[0]}°C</p>
+            <p>Мин. t°C: ${data.daily.temperature_2m_min[0]}°C</p>
             <p>Состояние: ${weatherText}</p>
             <p>Ветер: ${data.current_weather.windspeed} м/с</p>
         </div>
