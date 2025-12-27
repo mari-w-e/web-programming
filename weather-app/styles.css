@@ -5,51 +5,89 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #f2f2f2;
+    background: #eef2f5;
 }
 
-header {
-    background: #1976d2;
-    color: white;
-    padding: 15px;
+
+.header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: #1e88e5;
+    color: white;
+    flex-wrap: wrap;
 }
+
+.logo {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.city-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.city-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.city-buttons button {
+    background: white;
+    color: #1e88e5;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.city-buttons button.active {
+    background: #1565c0;
+    color: white;
+}
+
+.add-btn,
+.refresh-btn {
+    background: #1565c0;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 
 main {
-    padding: 15px;
+    padding: 20px;
 }
 
-#add-city-section {
+.add-city {
     background: white;
     padding: 15px;
-    margin-bottom: 20px;
     border-radius: 6px;
+    max-width: 400px;
+    margin-bottom: 20px;
 }
 
-#cityInput {
+.add-city input {
     width: 100%;
     padding: 8px;
-    margin-bottom: 5px;
 }
 
-#suggestions {
-    background: #eee;
+.suggestions {
+    background: #f0f0f0;
 }
 
 .suggestion {
-    padding: 5px;
+    padding: 6px;
     cursor: pointer;
 }
 
 .suggestion:hover {
     background: #ddd;
-}
-
-button {
-    padding: 8px 12px;
-    cursor: pointer;
 }
 
 .error {
@@ -58,27 +96,24 @@ button {
 }
 
 .status {
-    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-.hidden {
-    display: none;
-}
-
-#weather-container {
+.weather-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 20px;
 }
 
-.city-card {
+
+.weather-card {
     background: white;
-    padding: 10px;
+    border-radius: 8px;
+    padding: 15px;
     width: 100%;
-    border-radius: 6px;
 }
 
-.city-card h3 {
+.weather-card h2 {
     margin-top: 0;
 }
 
@@ -89,11 +124,15 @@ button {
 
 .day {
     text-align: center;
-    font-size: 14px;
 }
 
+
 @media (min-width: 768px) {
-    .city-card {
+    .weather-card {
         width: 30%;
     }
+}
+
+.hidden {
+    display: none;
 }
