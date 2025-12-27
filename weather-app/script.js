@@ -16,7 +16,6 @@ let userLocation = JSON.parse(localStorage.getItem("userLocation"));
 let activeCity = null;
 let selectedCity = null;
 
-
 function save() {
     localStorage.setItem("cities", JSON.stringify(cities));
     localStorage.setItem("userLocation", JSON.stringify(userLocation));
@@ -31,12 +30,10 @@ function weatherCodeToText(code) {
     return "Осадки";
 }
 
-
 function formatDate(offset) {
     const d = new Date();
     d.setDate(d.getDate() + offset);
     const day = d.toLocaleDateString("ru-RU");
-
     if (offset === 0) return `Сегодня ${day}`;
     if (offset === 1) return `Завтра ${day}`;
     return `Послезавтра ${day}`;
@@ -45,16 +42,11 @@ function formatDate(offset) {
 if (!userLocation) {
     navigator.geolocation.getCurrentPosition(
         pos => {
-            userLocation = {
-                name: "Текущее местоположение",
-                lat: pos.coords.latitude,
-                lon: pos.coords.longitude
-            };
+            userLocation = {name: "Текущее местоположение", lat: pos.coords.latitude, lon: pos.coords.longitude};
             save();
             setActiveCity(userLocation);
         },
         () => {
-            
             cityModal.classList.remove("hidden");
             statusText.textContent = "Введите город вручную";
         }
@@ -63,24 +55,17 @@ if (!userLocation) {
 
 function renderCityButtons() {
     cityButtonsDiv.innerHTML = "";
-
     if (userLocation) createCityButton(userLocation);
     cities.forEach(c => createCityButton(c));
 }
 
-
 function createCityButton(city) {
     const btn = document.createElement("button");
     btn.textContent = city.name;
-
-    if (activeCity && city.name === activeCity.name) {
-        btn.classList.add("active");
-    }
-
+    if (activeCity && city.name === activeCity.name) btn.classList.add("active");
     btn.onclick = () => setActiveCity(city);
     cityButtonsDiv.appendChild(btn);
 }
-
 
 function setActiveCity(city) {
     activeCity = city;
@@ -91,7 +76,6 @@ function setActiveCity(city) {
 function loadWeather(city) {
     statusText.textContent = "Загрузка...";
     weatherContainer.innerHTML = "";
-
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode,windspeed_10m_max&timezone=auto`)
         .then(r => r.json())
         .then(data => {
@@ -103,7 +87,6 @@ function loadWeather(city) {
 
 function renderWeather(name, data) {
     const weatherText = weatherCodeToText(data.current_weather.weathercode);
-
     weatherContainer.innerHTML = `
         <div class="current-weather">
             <h2>${name}</h2>
@@ -113,7 +96,6 @@ function renderWeather(name, data) {
             <p>Состояние: ${weatherText}</p>
             <p>Ветер: ${data.current_weather.windspeed} м/с</p>
         </div>
-
         <div class="forecast-table">
             <table>
                 <tr>
@@ -151,7 +133,6 @@ function renderWeather(name, data) {
     `;
 }
 
-
 addCityToggle.onclick = () => {
     cityModal.classList.remove("hidden");
     cityError.textContent = "";
@@ -159,72 +140,53 @@ addCityToggle.onclick = () => {
     suggestionsDiv.innerHTML = "";
 };
 
-closeModalBtn.onclick = () => {
-    cityModal.classList.add("hidden");
-};
-
+closeModalBtn.onclick = () => cityModal.classList.add("hidden");
 
 cityInput.addEventListener("input", () => {
     const value = cityInput.value.trim();
-    suggestionsDiv.innerHTML = "";
-    cityError.textContent = "";
     selectedCity = null;
-
+    suggestionsDiv.innerHTML = "";
     if (value.length < 2) return;
-
+    const fragment = document.createDocumentFragment();
     fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${value}&count=5&language=ru`)
         .then(r => r.json())
         .then(data => {
             if (!data.results) return;
-
             data.results.forEach(item => {
                 const div = document.createElement("div");
                 div.className = "suggestion";
                 div.textContent = `${item.name}, ${item.country}`;
-
                 div.onclick = () => {
                     cityInput.value = item.name;
-                    selectedCity = {
-                        name: item.name,
-                        lat: item.latitude,
-                        lon: item.longitude
-                    };
+                    selectedCity = {name: item.name, lat: item.latitude, lon: item.longitude};
                     suggestionsDiv.innerHTML = "";
                 };
-
-                suggestionsDiv.appendChild(div);
+                fragment.appendChild(div);
             });
+            suggestionsDiv.appendChild(fragment);
         });
 });
 
 addCityBtn.onclick = () => {
     cityError.textContent = "";
-
     if (!selectedCity) {
         cityError.textContent = "Выберите город из списка";
         return;
     }
-
     if (cities.find(c => c.name === selectedCity.name)) {
         cityError.textContent = "Город уже добавлен";
         return;
     }
-
     cities.push(selectedCity);
     save();
-
     setActiveCity(selectedCity);
-
     cityModal.classList.add("hidden");
     cityInput.value = "";
     selectedCity = null;
     suggestionsDiv.innerHTML = "";
 };
 
-
-refreshBtn.onclick = () => {
-    if (activeCity) loadWeather(activeCity);
-};
+refreshBtn.onclick = () => { if (activeCity) loadWeather(activeCity); };
 
 renderCityButtons();
 if (userLocation) setActiveCity(userLocation);
