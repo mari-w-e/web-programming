@@ -20,19 +20,16 @@
 </header>
 
 <main>
-    <!-- окно добавления города -->
-    <section id="addCitySection" class="add-city hidden">
+    <!-- раскрывающееся добавление города -->
+    <section id="addCitySection" class="add-city collapsed">
         <input type="text" id="cityInput" placeholder="Введите город">
-        <div id="suggestions" class="suggestions"></div>
         <p id="cityError" class="error"></p>
         <button id="addCityBtn">Добавить</button>
     </section>
 
     <p id="status" class="status"></p>
 
-    <section id="weatherContainer" class="weather-layout">
-        <!-- данные погоды -->
-    </section>
+    <section id="weatherContainer" class="weather-layout"></section>
 </main>
 
 <script src="script.js"></script>
