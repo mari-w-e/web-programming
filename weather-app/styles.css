@@ -208,6 +208,8 @@ th, td {
         width: 100%;
         table-layout: fixed;
         font-size: 11px;
+        transform: scale(0.95);
+        transform-origin: left top;
     }
 
     .forecast-table th,
