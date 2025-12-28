@@ -91,8 +91,8 @@ function renderWeather(name, data) {
         <div class="current-weather">
             <h2>${name}</h2>
             <div class="current-temp">${data.current_weather.temperature}°C</div>
-            <p>Макс. t°C: ${data.daily.temperature_2m_max[0]}°C</p>
-            <p>Мин. t°C: ${data.daily.temperature_2m_min[0]}°C</p>
+            <p>Max t°C: ${data.daily.temperature_2m_max[0]}°C</p>
+            <p>Min t°C: ${data.daily.temperature_2m_min[0]}°C</p>
             <p>Состояние: ${weatherText}</p>
             <p>Ветер: ${data.current_weather.windspeed} м/с</p>
         </div>
@@ -105,13 +105,13 @@ function renderWeather(name, data) {
                     <th>${formatDate(2)}</th>
                 </tr>
                 <tr>
-                    <td>Максимальная t°C</td>
+                    <td>Max t°C</td>
                     <td>${data.daily.temperature_2m_max[0]}</td>
                     <td>${data.daily.temperature_2m_max[1]}</td>
                     <td>${data.daily.temperature_2m_max[2]}</td>
                 </tr>
                 <tr>
-                    <td>Минимальная t°C</td>
+                    <td>Min t°C</td>
                     <td>${data.daily.temperature_2m_min[0]}</td>
                     <td>${data.daily.temperature_2m_min[1]}</td>
                     <td>${data.daily.temperature_2m_min[2]}</td>
