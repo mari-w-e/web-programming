@@ -30,9 +30,13 @@ body {
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
-    width: 100%;
 }
 
+@media (min-width: 700px) {
+    .city-selector {
+        flex-wrap: nowrap;
+    }
+}
 
 .city-buttons {
     display: flex;
@@ -65,8 +69,15 @@ body {
     padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
-    margin-top: 8px;
 }
+
+@media (max-width: 700px) {
+    .add-btn,
+    .refresh-btn {
+        margin-top: 8px;
+    }
+}
+
 
 
 main {
@@ -191,12 +202,19 @@ th, td {
     min-width: 360px;
 }
 
+
 @media (max-width: 600px) {
     .forecast-table table {
-        font-size: 12px;
+        width: 100%;
+        table-layout: fixed;
+        font-size: 11px;
     }
 
-    th, td {
-        padding: 4px;
+    .forecast-table th,
+    .forecast-table td {
+        padding: 3px;
+        word-break: break-word;
     }
+    
 }
+
