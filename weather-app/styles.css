@@ -11,13 +11,14 @@ body {
 
 .header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     padding: 12px 20px;
     background: #1e88e5;
     color: white;
     flex-wrap: wrap;
 }
+
 
 .logo {
     font-size: 20px;
@@ -28,12 +29,18 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
+    width: 100%;
 }
+
 
 .city-buttons {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
+    max-width: 100%;
 }
+
 
 .city-buttons button {
     background: #1e88e5;
@@ -173,3 +180,13 @@ th, td {
 .suggestion:hover {
     background: #eef5ff;
 }
+
+
+.forecast-table {
+    overflow-x: auto;
+}
+
+.forecast-table table {
+    min-width: 360px;
+}
+
